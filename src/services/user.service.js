@@ -1,8 +1,11 @@
 import axios from 'axios';
+import {config} from "@/config";
 
 export const userService = {
     login,
     logout,
+    isAuthenticated,
+    getData
 };
 
 class User {
@@ -11,9 +14,8 @@ class User {
 }
 
 function login(username, password) {
-    var session_url = 'http://localhost:8080/auth';
     var basicAuth = 'Basic ' + btoa(username + ':' + password);
-    return axios.get(session_url, {
+    return axios.get(config.API_URL + '/auth', {
         withCredentials: false,
         headers: {'Authorization': +basicAuth},
         auth: {
@@ -27,12 +29,22 @@ function login(username, password) {
         localStorage.setItem('user', JSON.stringify(user));
         return user;
     });
+}
 
-
+function getData(mapping, params = "", method = "get") {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const basicAuth = 'Basic ' + user.authdata;
+    return axios(config.API_URL + mapping, {
+        method: method,
+        withCredentials: false,
+        headers: {'Authorization': basicAuth},
+        params: params
+    }).then(response => {
+        return response.data;
+    })
 }
 
 function logout() {
-    // remove user from local storage to log user out
     localStorage.removeItem('user');
 }
 
