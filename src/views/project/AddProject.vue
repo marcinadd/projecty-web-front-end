@@ -1,4 +1,4 @@
-<template xmlns="http://www.w3.org/1999/html">
+<template>
     <form @submit.prevent="submitProject" method="post" name="f">
         <div class="form-group">
             <label for="name">Name</label>
@@ -6,13 +6,7 @@
         </div>
         <div class="form-group">
             <label>Add users</label><br>
-            <div :key="k" class="form-group" v-for="(input,k) in inputs">
-                <input class="form-control" type="text" v-model="input.username">
-                <input @click="remove(k)" class="btn btn-danger" type="button"
-                       v-show="k || ( !k && inputs.length > 1)" value="-"/>
-                <input @click="add(k)" class="btn btn-success" type="button" v-show="k === inputs.length-1"
-                       value="+"/>
-            </div>
+            <EntryUserList @inputData="updateInputs"></EntryUserList>
         </div>
         <div class="form-group" id="users">
 
@@ -26,9 +20,11 @@
 <script>
     import {userService} from "@/services";
     import {router} from "@/router/router";
+    import EntryUserList from "@/components/EntryUserList";
 
     export default {
         name: "AddProject",
+        components: {EntryUserList},
         data() {
             return {
                 name: '',
@@ -40,22 +36,17 @@
             }
         },
         methods: {
-            add(index) {
-                this.inputs.push({username: ''})
-            },
-            remove(index) {
-                this.inputs.splice(index, 1)
+            updateInputs(inputs) {
+                this.inputs = inputs;
             },
             submitProject() {
                 const {name, inputs} = this;
-                const usernames = [];
-                for (let i = 0; i < inputs.length; i++) {
-                    usernames.push(inputs[i].username);
-                }
-                userService.getData("/project/addproject", {name: name, usernames: usernames.join(',')}, "post")
-                    .then(
-                        router.push('/myProjects')
-                    )
+                const usernames = userService.getUsernamesFromInputs(inputs);
+                userService.makeRequestToAPI("/project/addproject", {
+                    name: name,
+                    usernames: usernames.join(',')
+                }, "post")
+                router.push('/myProjects');
             }
         }
     }

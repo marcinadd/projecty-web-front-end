@@ -5,7 +5,8 @@ export const userService = {
     login,
     logout,
     isAuthenticated,
-    getData
+    makeRequestToAPI: getData,
+    getUsernamesFromInputs
 };
 
 class User {
@@ -50,4 +51,12 @@ function logout() {
 
 function isAuthenticated() {
     return localStorage.getItem('user');
+}
+
+function getUsernamesFromInputs(inputs) {
+    const usernames = [];
+    for (let i = 0; i < inputs.length; i++) {
+        usernames.push(inputs[i].username);
+    }
+    return usernames;
 }

@@ -2,18 +2,13 @@
     <div class="container">
         <h2 class="text-center">Manage project</h2>
         <h3>Change project name</h3>
-        <form class="my-2" method="post" th:action="@{/project/changeName}" th:object="${project}">
-            <div class="alert alert-danger" role="alert" th:if="${#fields.hasErrors('*')}">
-                <ul>
-                    <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
-                </ul>
-            </div>
-            <input name="id" th:value="${project.id}" type="hidden">
+        <form @submit.prevent="changeName" class="my-2">
             <div class="form-group">
                 <label for="newName">New Name:</label>
-                <input :value="project.name" class="form-control" id="newName" name="name" type="text">
+                <input :placeholder="project.name" class="form-control" id="newName" name="name" type="text"
+                       v-model="name">
             </div>
-            <button class="btn btn-success" type="submit">Change name</button>
+            <button class="btn btn-success">Change name</button>
         </form>
         <template v-if="project.team === null">
             <div class="pt-3">
@@ -23,7 +18,6 @@
                 <thead>
                 <tr>
                     <th scope="col">Username</th>
-                    <th scope="col">E-mail</th>
                     <th scope="col">Role name</th>
                     <th scope="col">Remove</th>
                     <th scope="col">Change project role</th>
@@ -32,7 +26,6 @@
                 <tbody v-for="projectRole in projectRoles">
                 <tr>
                     <td>{{projectRole.user.username}}</td>
-                    <td th:text="${projectRole.user.email}">TODO HIDDEN</td>
                     <td>{{projectRole.name}}</td>
                     <td>
                         <button class="btn btn-danger disabled" v-if="projectRole.user.id === currentUser.id">
@@ -53,7 +46,6 @@
                             </button>
                         </form>
                         <form @submit.prevent="changeRole(projectRole.id,'ADMIN')"
-                              method="post"
                               v-if="projectRole.name === 'USER' && projectRole.user.id !== currentUser.id">
                             <button class="btn btn-danger" type="submit">
                                 Enable Admin
@@ -64,22 +56,16 @@
                 </tbody>
             </table>
             <h3>Add users</h3>
-            <form method="post" th:action="@{/project/addUsers(projectId=${project.id})}">
-                <div class="form-group">
-                    <label>Add users</label><br>
-                    <input class="btn btn-success" id="add" type="button" value="+"/>
-                    <input class="btn btn-danger" id="remove" type="button" value="-"/>
-                </div>
-                <div class="form-group" id="users">
-                </div>
+            <form @submit.prevent="addUsers">
+                <EntryUserList @inputData="updateInputs"></EntryUserList>
                 <div class="form-actions">
-                    <button class="btn btn-success" type="submit">Add</button>
+                    <button class="btn btn-success" type="submit">Add users</button>
                 </div>
             </form>
         </template>
         <template v-if="project.team !== null">
             <div class="alert alert-primary my-4" role="alert">
-                This project is visible for all members of team <u th:text="${project.team.name}"></u>. <br>
+                This project is visible for all members of team <u>{{project.team.name}}</u>. <br>
                 All team members have access to project corresponding to their roles.<br>
                 You can't set them separately.
             </div>
@@ -94,34 +80,52 @@
 <script>
     import {userService} from "@/services";
     import {router} from "@/router/router";
+    import EntryUserList from "@/components/EntryUserList";
 
     export default {
         name: "ManageProject",
+        components: {EntryUserList},
         data() {
             return {
                 project: [],
                 projectRoles: [],
                 currentUser: [],
+                name: '',
+                inputs: [
+                    {
+                        username: ''
+                    }
+                ]
             }
         },
         mounted() {
-            userService.getData("/project/manageProject", {projectId: this.$route.query.projectId})
+            userService.makeRequestToAPI("/project/manageProject", {projectId: this.$route.query.projectId})
                 .then((data) => {
                     this.project = data.project;
                     this.currentUser = data.currentUser;
                     this.projectRoles = data.projectRoles;
+                    this.name = data.name;
                 });
         },
         methods: {
+            changeName() {
+                userService.makeRequestToAPI("/project/changeName",
+                    {id: this.$route.query.projectId, name: this.name}, 'post')
+                    .then((data) => {
+                        location.reload()
+                    }).catch(error => {
+                    console.log(error);
+                })
+            },
             deleteProject() {
-                userService.getData("/project/deleteProject", {projectId: this.$route.query.projectId}, 'post').then((data) => {
+                userService.makeRequestToAPI("/project/deleteProject", {projectId: this.$route.query.projectId}, 'post').then((data) => {
                     router.push("/myProjects");
                 }).catch(error => {
                     console.log(error);
                 })
             },
             changeRole(roleId, newRoleName) {
-                userService.getData("/project/changeRole", {
+                userService.makeRequestToAPI("/project/changeRole", {
                     projectId: this.$route.query.projectId,
                     roleId: roleId,
                     newRoleName: newRoleName
@@ -132,7 +136,7 @@
                 })
             },
             deleteUser(userId) {
-                userService.getData("/project/deleteUser", {
+                userService.makeRequestToAPI("/project/deleteUser", {
                     projectId: this.$route.query.projectId,
                     userId: userId
                 }, 'post').then((data) => {
@@ -140,7 +144,22 @@
                 }).catch(error => {
                     console.log(error);
                 })
-            }
+            },
+            updateInputs(inputs) {
+                this.inputs = inputs;
+            },
+            addUsers() {
+                const {inputs} = this;
+                const usernames = userService.getUsernamesFromInputs(inputs);
+                userService.makeRequestToAPI("/project/addUsers", {
+                    projectId: this.$route.query.projectId,
+                    usernames: usernames.join(',')
+                }, 'post').then((data) => {
+                    location.reload();
+                }).catch(error => {
+                    console.log(error);
+                })
+            },
         }
     }
 </script>
