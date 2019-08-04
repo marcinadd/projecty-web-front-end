@@ -40,11 +40,12 @@
                                 </td>
                                 <template v-if="teamRole.name === 'MANAGER'">
                                     <td>
-                                        <a th:href="@{/project/task/addtasks(projectId=${project.id})}">
+                                        <router-link
+                                                :to="{path: '/project/task/addTask', query: {projectId: project.id}}">
                                             <button class="btn btn-success" id="addTaskTeamButton" type="button">Add
                                                 task
                                             </button>
-                                        </a>
+                                        </router-link>
                                     </td>
                                     <td>
                                         <router-link
@@ -99,9 +100,10 @@
                         </div>
                         <template v-if="projectRole.name === 'ADMIN'">
                             <div class="p-2">
-                                <a th:href="@{/project/task/addtasks(projectId=${projectRole.project.id})}">
+                                <router-link
+                                        :to="{path: '/project/task/addTask', query: {projectId: projectRole.project.id}}">
                                     <button class="btn btn-success" id="addTaskButton" type="button">Add task</button>
-                                </a>
+                                </router-link>
                             </div>
                             <div class="p-2">
                                 <router-link
