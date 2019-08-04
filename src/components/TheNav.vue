@@ -43,7 +43,8 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" th:href="@{/logout}">Log out</a>
+                            <a class="nav-link js-scroll-trigger" style="cursor: pointer" v-on:click="logout">Log
+                                out</a>
                         </li>
                     </template>
                 </ul>
@@ -60,6 +61,10 @@
         methods: {
             isAuthenticated() {
                 return userService.isAuthenticated();
+            },
+            logout() {
+                userService.logout();
+                location.reload();
             }
         }
     }

@@ -1,20 +1,24 @@
 <template>
-    <form @submit.prevent="submitProject" method="post" name="f">
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input class="form-control" id="name" name="name" type="text" v-model="name"/>
-        </div>
-        <div class="form-group">
-            <label>Add users</label><br>
-            <EntryUserList @inputData="updateInputs"></EntryUserList>
-        </div>
-        <div class="form-group" id="users">
+    <div>
+        <h1>Add project</h1>
+        <form @submit.prevent="submitProject" method="post" name="f">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input class="form-control" id="name" name="name" placeholder="Enter project name" type="text"
+                       v-model="name"/>
+            </div>
+            <div class="form-group">
+                <label>Add users</label><br>
+                <EntryUserList @inputData="updateInputs"></EntryUserList>
+            </div>
+            <div class="form-group" id="users">
 
-        </div>
-        <div class="form-actions">
-            <button class="btn btn-info" type="submit">Add project</button>
-        </div>
-    </form>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-info" type="submit">Add project</button>
+            </div>
+        </form>
+    </div>
 </template>
 
 <script>
@@ -45,7 +49,7 @@
                 userService.makeRequestToAPI("/project/addproject", {
                     name: name,
                     usernames: usernames.join(',')
-                }, "post")
+                }, "post");
                 router.push('/myProjects');
             }
         }

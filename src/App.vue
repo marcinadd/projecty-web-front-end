@@ -3,7 +3,6 @@
       <TheNav/>
       <TheHeader title="Hello"></TheHeader>
       <Section></Section>
-      <router-link to='/'>Home</router-link>
       <TheFooter/>
   </div>
 </template>

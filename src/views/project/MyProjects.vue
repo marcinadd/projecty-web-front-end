@@ -25,7 +25,6 @@
                                 <template v-if="teamRole.name === 'MANAGER'">
                                     <th scope="col">Task list</th>
                                     <th scope="col">Add task</th>
-                                    <th scope="col">Manage Project</th>
                                     <th scope="col">Delete project</th>
                                 </template>
                             </tr>
@@ -54,12 +53,6 @@
                                                 Manage project
                                             </button>
                                         </router-link>
-                                    </td>
-                                    <td>
-                                        <form method="POST"
-                                              th:action="@{/project/deleteproject(projectId=${project.id})}">
-                                            <button class="btn btn-danger" type="submit">Delete project</button>
-                                        </form>
                                     </td>
                                 </template>
                             </tr>
@@ -99,12 +92,12 @@
                     </div>
                     <div class="d-flex justify-content-around">
                         <div class="p-2">
-                            <a th:href="@{/project/task/taskList(projectId=${projectRole.project.id})}">
+                            <router-link
+                                    :to="{path: '/project/task/taskList', query: {projectId: projectRole.project.id}}">
                                 <button class="btn btn-primary" id="tasksListButton" type="button">Task list</button>
-                            </a>
+                            </router-link>
                         </div>
-                        <div th:if="${projectRole.name == T(com.projecty.projectyweb.project.role.ProjectRoles).ADMIN}"
-                             th:remove="tag">
+                        <template v-if="projectRole.name === 'ADMIN'">
                             <div class="p-2">
                                 <a th:href="@{/project/task/addtasks(projectId=${projectRole.project.id})}">
                                     <button class="btn btn-success" id="addTaskButton" type="button">Add task</button>
@@ -120,11 +113,11 @@
                             </div>
                             <div class="p-2">
                                 <form method="POST"
-                                      th:action="@{/project/leaveProject(projectId=${projectRole.project.id})}">
+                                      @submit.prevent="leaveProject(projectRole.project.id)">
                                     <button class="btn btn-danger" type="submit">Leave project</button>
                                 </form>
                             </div>
-                        </div>
+                        </template>
                     </div>
                 </li>
             </ul>
@@ -144,10 +137,21 @@
             }
         },
         mounted() {
-            userService.getData("/project/myProjects").then(data => {
+            userService.makeRequestToAPI("/project/myProjects").then(data => {
                 this.teamRoles = data.teamRoles;
                 this.projectRoles = data.projectRoles;
             });
+        },
+        methods: {
+            leaveProject(projectId) {
+                userService.makeRequestToAPI("/project/leaveProject", {
+                    projectId: projectId
+                }, 'post').then((data) => {
+                    location.reload();
+                }).catch(error => {
+                    console.log(error);
+                })
+            }
         }
     }
 </script>

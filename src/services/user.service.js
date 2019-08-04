@@ -6,7 +6,7 @@ export const userService = {
     logout,
     isAuthenticated,
     makeRequestToAPI: getData,
-    getUsernamesFromInputs
+    getUsernamesFromInputs,
 };
 
 class User {
