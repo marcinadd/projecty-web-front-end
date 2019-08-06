@@ -8,6 +8,8 @@ import AddProject from "@/views/project/AddProject";
 import ManageProject from "@/views/project/ManageProject";
 import AddTask from "@/views/task/AddTask";
 import ManageTask from "@/views/task/ManageTask";
+import MyTeams from "@/views/team/MyTeams";
+import ManageTeam from "@/views/team/ManageTeam";
 
 
 Vue.use(Router);
@@ -24,6 +26,9 @@ export const router = new Router({
         {path: '/project/task/taskList', component: TaskList},
         {path: '/project/task/addTask', component: AddTask},
         {path: '/project/task/manageTask', component: ManageTask},
+
+        {path: '/team/myTeams', component: MyTeams},
+        {path: '/team/manageTeam', component: ManageTeam},
 
         // otherwise redirect to home
         {path: '*', redirect: '/'}

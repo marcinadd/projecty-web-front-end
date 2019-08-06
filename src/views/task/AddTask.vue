@@ -45,15 +45,16 @@
         },
         methods: {
             submitTask() {
+                const projectId = this.$route.query.projectId;
                 const {name, startDate, endDate} = this;
                 userService.makeRequestToAPI("/project/task/addTask", {
-                    projectId: this.$route.query.projectId,
+                    projectId: projectId,
                     name: name,
                     startDate: startDate,
                     endDate: endDate
                 }, 'post')
                     .then(function () {
-                        router.push('/myProjects');
+                        router.push({path: "/project/task/taskList", query: {projectId: projectId}});
                         location.reload();
                     })
             }

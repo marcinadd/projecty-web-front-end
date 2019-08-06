@@ -4,9 +4,9 @@
             <input class="form-control" placeholder="Enter username" type="text" v-model="input.username"
                    v-on:input="dataUpdated">
             <input @click="remove(k)" class="btn btn-danger" type="button"
-                   v-show="k || ( !k && inputs.length > 1)" value="-"/>
+                   v-show="k || ( !k && inputs.length > 1)" value="-">
             <input @click="add(k)" class="btn btn-success" type="button" v-show="k === inputs.length-1"
-                   value="+"/>
+                   value="+">
         </div>
     </div>
 </template>

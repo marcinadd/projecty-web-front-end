@@ -33,9 +33,9 @@
                             </router-link>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" th:href="@{/team/myTeams}">
+                            <router-link class="nav-link" to="/team/myTeams">
                                 Teams
-                            </a>
+                            </router-link>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link js-scroll-trigger" th:href="@{/settings}">
