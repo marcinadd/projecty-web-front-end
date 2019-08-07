@@ -23,7 +23,7 @@
                     <th scope="col">Change project role</th>
                 </tr>
                 </thead>
-                <tbody v-for="projectRole in projectRoles">
+                <tbody :key="k" v-for="(projectRole,k) in projectRoles">
                 <tr>
                     <td>{{projectRole.user.username}}</td>
                     <td>{{projectRole.name}}</td>
@@ -111,39 +111,32 @@
             changeName() {
                 userService.makeRequestToAPI("/project/changeName",
                     {id: this.$route.query.projectId, name: this.name}, 'post')
-                    .then((data) => {
-                        location.reload()
-                    }).catch(error => {
-                    console.log(error);
-                })
+                    .then(function () {
+                        location.reload();
+                    });
             },
             deleteProject() {
-                userService.makeRequestToAPI("/project/deleteProject", {projectId: this.$route.query.projectId}, 'post').then((data) => {
+                userService.makeRequestToAPI("/project/deleteProject", {projectId: this.$route.query.projectId}, 'post')
+                    .then(function () {
                     router.push("/myProjects");
-                }).catch(error => {
-                    console.log(error);
-                })
+                    });
             },
             changeRole(roleId, newRoleName) {
                 userService.makeRequestToAPI("/project/changeRole", {
                     projectId: this.$route.query.projectId,
                     roleId: roleId,
                     newRoleName: newRoleName
-                }, 'post').then((data) => {
+                }, 'post').then(function () {
                     location.reload();
-                }).catch(error => {
-                    console.log(error);
-                })
+                });
             },
             deleteUser(userId) {
                 userService.makeRequestToAPI("/project/deleteUser", {
                     projectId: this.$route.query.projectId,
                     userId: userId
-                }, 'post').then((data) => {
+                }, 'post').then(function () {
                     location.reload();
-                }).catch(error => {
-                    console.log(error);
-                })
+                });
             },
             updateInputs(inputs) {
                 this.inputs = inputs;
@@ -154,10 +147,8 @@
                 userService.makeRequestToAPI("/project/addUsers", {
                     projectId: this.$route.query.projectId,
                     usernames: usernames.join(',')
-                }, 'post').then((data) => {
+                }, 'post').then(function () {
                     location.reload();
-                }).catch(error => {
-                    console.log(error);
                 })
             },
         }

@@ -9,7 +9,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                    <template v-if="!isAuthenticated">
+                    <template v-if="isAuthenticatedUser()">
                         <li class="nav-item">
                             <a class="nav-link js-scroll-trigger" th:href="@{/login}">Sign in</a>
                         </li>
@@ -17,7 +17,7 @@
                             <a class="nav-link js-scroll-trigger" th:href="@{/register}">Sign up</a>
                         </li>
                     </template>
-                    <template th:remove="tag" v-if="isAuthenticated">
+                    <template v-else>
                         <li class="nav-item">
                             <a class="nav-link js-scroll-trigger" th:href="@{/messages/messageList}">
                                 <div th:if="${@messageService.getMessageCountForCurrentUser()>0}" th:remove="tag">
@@ -39,7 +39,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link js-scroll-trigger" th:href="@{/settings}">
-                                <span sec:authentication="name">Name</span>
+                                <span>{{username}}</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -58,9 +58,20 @@
 
     export default {
         name: "TheNav",
+        data() {
+            return {
+                username: ''
+            }
+        },
+        mounted() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                this.username = user.username;
+            }
+        },
         methods: {
-            isAuthenticated() {
-                return userService.isAuthenticated();
+            isAuthenticatedUser() {
+                return localStorage.getItem('user') === null;
             },
             logout() {
                 userService.logout();

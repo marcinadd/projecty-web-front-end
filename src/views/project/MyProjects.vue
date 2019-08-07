@@ -10,7 +10,7 @@
         </router-link>
         <div class="container my-4">
             <h3>Team's projects</h3>
-            <ul class="list-group" v-for="teamRole in teamRoles">
+            <ul :key="k" class="list-group" v-for="(teamRole,k) in teamRoles">
                 <li class="list-group-item my-2">
                     <router-link :to="{path: '/team/addTeamProject', query: {teamId: teamRole.team.id}}"
                                  v-if="teamRole.name === 'MANAGER'">
@@ -29,7 +29,7 @@
                                 </template>
                             </tr>
                             </thead>
-                            <tbody v-for="project in teamRole.team.projects">
+                            <tbody :key="k" v-for="(project,k) in teamRole.team.projects">
                             <tr>
                                 <td>{{project.name}}</td>
                                 <td>
@@ -65,7 +65,7 @@
         </div>
         <div class="container my-3">
             <h3>Projects</h3>
-            <ul class="list-group" v-for="projectRole in projectRoles">
+            <ul :key="k" class="list-group" v-for="(projectRole,k) in projectRoles">
                 <li class="list-group-item my-2">
                     <div class="row">
                         <div class="mx-auto">{{projectRole.project.name}}</div>
@@ -77,15 +77,13 @@
                                 <thead>
                                 <tr>
                                     <th scope="col">Username</th>
-                                    <th scope="col">Email</th>
                                     <th scope="col">Role</th>
                                 </tr>
                                 </thead>
-                                <tbody v-for="roleObj in projectRole.project.projectRoles">
+                                <tbody :key="k" v-for="(roleObj,k) in projectRole.project.projectRoles">
                                 <tr>
-                                    <!--                                    <td>{{roleObj.name}}</td>-->
-                                    <td th:text="${roleObj.user.email}"></td>
-                                    <td th:text="${roleObj.name}"></td>
+                                    <td>{{roleObj.user.username}}</td>
+                                    <td>{{roleObj.name}}</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -148,10 +146,8 @@
             leaveProject(projectId) {
                 userService.makeRequestToAPI("/project/leaveProject", {
                     projectId: projectId
-                }, 'post').then((data) => {
+                }, 'post').then(function () {
                     location.reload();
-                }).catch(error => {
-                    console.log(error);
                 })
             }
         }

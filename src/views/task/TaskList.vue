@@ -149,9 +149,9 @@
             },
             changeStatus(taskId, status) {
                 userService.makeRequestToAPI("/project/task/changeStatus",
-                    {taskId: taskId, status: status}, 'post').then(data => {
-                    console.log(data);
-                    location.reload();
+                    {taskId: taskId, status: status}, 'post')
+                    .then(function () {
+                        location.reload();
                 })
             }
         }
