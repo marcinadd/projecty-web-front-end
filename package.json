@@ -11,7 +11,8 @@
     "core-js": "^2.6.5",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "vuejs-dialog": "^1.4.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.9.0",

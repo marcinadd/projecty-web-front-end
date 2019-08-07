@@ -32,13 +32,7 @@
                     <td>{{teamRole.user.username}}</td>
                     <td>{{teamRole.name}}</td>
                     <td>
-                        <a th:href="@{/team/leaveTeamConfirm(teamId=${teamRole.team.id})}"
-                           v-if="teamRole.user.id === currentUser.id">
-                            <button class="btn btn-danger">
-                                Leave
-                            </button>
-                        </a>
-                        <form @submit.prevent="deleteTeamRole(teamRole.id)" v-else>
+                        <form @submit.prevent="deleteTeamRole(teamRole.id)" v-if="teamRole.user.id !== currentUser.id">
                             <button class="btn btn-danger" type="submit">Delete</button>
                         </form>
                     </td>
@@ -71,9 +65,9 @@
             <div class="row my-2">
                 <h3>Delete team</h3>
             </div>
-            <a th:href="@{/team/deleteTeamConfirm(teamId=${team.id})}">
-                <button class="btn btn-danger">Delete team</button>
-            </a>
+            <form @submit.prevent="deleteTeam">
+                <button class="btn btn-danger" type="submit">Delete team</button>
+            </form>
         </div>
     </div>
 </template>
@@ -81,6 +75,7 @@
 <script>
     import {userService} from "@/services";
     import EntryUserList from "@/components/EntryUserList";
+    import {router} from "@/router/router";
 
     export default {
         name: "ManageTeam",
@@ -145,6 +140,20 @@
                     .then(function () {
                         location.reload()
                     })
+            },
+            deleteTeam() {
+                const teamId = this.team.id;
+                this.$dialog
+                    .confirm("You are going to delete team: " + this.team.name + ". Do you want to continue?")
+                    .then(function () {
+                        userService.makeRequestToAPI("/team/deleteTeam", {
+                            teamId: teamId,
+                        }, 'post')
+                            .then(function () {
+                                router.push('/team/myTeams');
+                                location.reload()
+                            })
+                    });
             }
         }
     }

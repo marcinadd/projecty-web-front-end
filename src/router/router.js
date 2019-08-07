@@ -10,6 +10,10 @@ import AddTask from "@/views/task/AddTask";
 import ManageTask from "@/views/task/ManageTask";
 import MyTeams from "@/views/team/MyTeams";
 import ManageTeam from "@/views/team/ManageTeam";
+import AddTeam from "@/views/team/AddTeam";
+import AddProjectToTeam from "@/views/team/AddProjectToTeam";
+import AddProjectToSpecifiedTeam from "@/views/team/AddProjectToSpecifiedTeam";
+import TeamProjectList from "@/views/team/TeamProjectList";
 
 
 Vue.use(Router);
@@ -20,6 +24,7 @@ export const router = new Router({
         {path: '/', component: Home},
         {path: '/login', component: LoginNew},
         {path: '/myProjects', component: MyProjects},
+
         {path: '/project/addProject', component: AddProject},
         {path: '/project/manageProject', component: ManageProject},
 
@@ -29,6 +34,10 @@ export const router = new Router({
 
         {path: '/team/myTeams', component: MyTeams},
         {path: '/team/manageTeam', component: ManageTeam},
+        {path: '/team/addTeam', component: AddTeam},
+        {path: '/team/addProjectToTeam', component: AddProjectToTeam},
+        {path: '/team/addProjectToSpecifiedTeam', component: AddProjectToSpecifiedTeam},
+        {path: '/team/projectList', component: TeamProjectList},
 
         // otherwise redirect to home
         {path: '*', redirect: '/'}

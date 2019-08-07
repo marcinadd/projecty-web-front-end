@@ -5,9 +5,9 @@
         <router-link class="my-4" to="/project/addProject">
             <button class="btn btn-success">Add project</button>
         </router-link>
-        <a class="my-4" th:href="@{/team/addTeamProject}">
+        <router-link to="/team/addProjectToTeam">
             <button class="btn btn-info">Add team project</button>
-        </a>
+        </router-link>
         <div class="container my-4">
             <h3>Team's projects</h3>
             <ul class="list-group" v-for="teamRole in teamRoles">

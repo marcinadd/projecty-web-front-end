@@ -2,9 +2,9 @@
     <div>
         <h2 class="text-center">My teams</h2>
         <div class="container">
-            <a class="my-2" th:href="@{/team/addTeam}">
+            <router-link to="/team/addTeam">
                 <button class="btn btn-success">Add new team</button>
-            </a>
+            </router-link>
             <ul :key="k" class="list-group" v-for="(teamRole, k ) in teamRoles">
                 <li class="list-group-item my-2">
                     <b><p>Team name</p></b>
@@ -49,10 +49,11 @@
                     </div>
                     <div class="d-flex justify-content-around">
                         <div class="p-2">
-                            <a th:href="@{/team/projectList(teamId=${teamRole.team.id})}">
+                            <router-link
+                                    :to="{path: '/team/projectList', query: {teamId: teamRole.team.id}}">
                                 <button class="btn btn-secondary" id="projectListButton" type="button">Project list
                                 </button>
-                            </a>
+                            </router-link>
                         </div>
                         <template v-if="teamRole.name === 'MANAGER'">
                             <div class="p-2">
@@ -63,16 +64,17 @@
                                 </router-link>
                             </div>
                             <div class="p-2">
-                                <a th:href="@{/team/addTeamProject(teamId=${teamRole.team.id})}">
+                                <router-link
+                                        :to="{path: '/team/addProjectToSpecifiedTeam', query: {teamId: teamRole.team.id}}">
                                     <button class="btn btn-success" id="addProjectButton" type="button">Add project
                                     </button>
-                                </a>
+                                </router-link>
                             </div>
                         </template>
                         <div class="p-2">
-                            <a th:href="@{/team/leaveTeamConfirm(teamId=${teamRole.team.id})}">
-                                <button class="btn btn-danger" id="leaveTeamButton" type="button">Leave team</button>
-                            </a>
+                            <form @submit.prevent="leaveTeam(teamRole.team)">
+                                <button class="btn btn-danger" id="leaveTeamButton" type="submit">Leave team</button>
+                            </form>
                         </div>
                     </div>
                 </li>
@@ -83,6 +85,7 @@
 
 <script>
     import {userService} from "@/services";
+    import {router} from "@/router/router";
 
     export default {
         name: "MyTeams",
@@ -96,6 +99,21 @@
                 this.teamRoles = teamRoles
             });
         },
+        methods: {
+            leaveTeam(team) {
+                this.$dialog
+                    .confirm("You are going to leave team: " + team.name + ". Do you want to continue?")
+                    .then(function () {
+                        userService.makeRequestToAPI("/team/leaveTeam", {
+                            teamId: team.id,
+                        }, 'post')
+                            .then(function () {
+                                router.push('/team/myTeams');
+                                location.reload()
+                            })
+                    });
+            }
+        }
     }
 </script>
 
