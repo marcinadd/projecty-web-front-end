@@ -19,13 +19,12 @@
                     </template>
                     <template v-else>
                         <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" th:href="@{/messages/messageList}">
-                                <div th:if="${@messageService.getMessageCountForCurrentUser()>0}" th:remove="tag">
-                                <span class="text-warning"
-                                      th:text="${'('+@messageService.getMessageCountForCurrentUser()}+')'"></span>
-                                </div>
+                            <router-link class="nav-link" to="/message/receivedMessages">
+                                <template v-if="unreadMessages>0">
+                                    <span class="text-warning">({{unreadMessages}})</span>
+                                </template>
                                 Messages
-                            </a>
+                            </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link class="nav-link" to="/myProjects">
@@ -60,7 +59,8 @@
         name: "TheNav",
         data() {
             return {
-                username: ''
+                username: '',
+                unreadMessages: 0
             }
         },
         mounted() {
@@ -68,6 +68,10 @@
             if (user) {
                 this.username = user.username;
             }
+            userService.makeRequestToAPI("/message/getUnreadMessageCount")
+                .then(unreadMessages => {
+                    this.unreadMessages = unreadMessages;
+                });
         },
         methods: {
             isAuthenticatedUser() {

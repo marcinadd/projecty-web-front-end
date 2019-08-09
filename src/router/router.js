@@ -14,6 +14,10 @@ import AddTeam from "@/views/team/AddTeam";
 import AddProjectToTeam from "@/views/team/AddProjectToTeam";
 import AddProjectToSpecifiedTeam from "@/views/team/AddProjectToSpecifiedTeam";
 import TeamProjectList from "@/views/team/TeamProjectList";
+import ReceivedMessages from "@/views/message/ReceivedMessages";
+import SendMessage from "@/views/message/SendMessage";
+import ViewMessage from "@/views/message/ViewMessage";
+import SentMessages from "@/views/message/SentMessages";
 
 
 Vue.use(Router);
@@ -38,6 +42,11 @@ export const router = new Router({
         {path: '/team/addProjectToTeam', component: AddProjectToTeam},
         {path: '/team/addProjectToSpecifiedTeam', component: AddProjectToSpecifiedTeam},
         {path: '/team/projectList', component: TeamProjectList},
+
+        {path: '/message/receivedMessages', component: ReceivedMessages},
+        {path: '/message/sentMessages', component: SentMessages},
+        {path: '/message/sendMessage', component: SendMessage},
+        {path: '/message/viewMessage', component: ViewMessage},
 
         // otherwise redirect to home
         {path: '*', redirect: '/'}
