@@ -18,6 +18,8 @@ import ReceivedMessages from "@/views/message/ReceivedMessages";
 import SendMessage from "@/views/message/SendMessage";
 import ViewMessage from "@/views/message/ViewMessage";
 import SentMessages from "@/views/message/SentMessages";
+import Register from "@/views/user/Register";
+import Settings from "@/views/user/Settings";
 
 
 Vue.use(Router);
@@ -27,6 +29,8 @@ export const router = new Router({
     routes: [
         {path: '/', component: Home},
         {path: '/login', component: LoginNew},
+        {path: '/register', component: Register},
+        {path: '/settings', component: Settings},
         {path: '/myProjects', component: MyProjects},
 
         {path: '/project/addProject', component: AddProject},
@@ -48,14 +52,12 @@ export const router = new Router({
         {path: '/message/sendMessage', component: SendMessage},
         {path: '/message/viewMessage', component: ViewMessage},
 
-        // otherwise redirect to home
         {path: '*', redirect: '/'}
     ]
 });
 
 router.beforeEach((to, from, next) => {
-    // redirect to login page if not logged in and trying to access a restricted page
-    const publicPages = ['/login'];
+    const publicPages = ['/login', '/register'];
     const authRequired = !publicPages.includes(to.path);
     const loggedIn = localStorage.getItem('user');
 

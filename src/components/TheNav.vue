@@ -11,10 +11,14 @@
                 <ul class="navbar-nav ml-auto">
                     <template v-if="isAuthenticatedUser()">
                         <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" th:href="@{/login}">Sign in</a>
+                            <router-link class="nav-link" to="/login">
+                                Sign in
+                            </router-link>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" th:href="@{/register}">Sign up</a>
+                            <router-link class="nav-link" to="/register">
+                                Sign up
+                            </router-link>
                         </li>
                     </template>
                     <template v-else>

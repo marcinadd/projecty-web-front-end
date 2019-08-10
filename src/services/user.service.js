@@ -7,6 +7,7 @@ export const userService = {
     isAuthenticated,
     makeRequestToAPI: getData,
     getUsernamesFromInputs,
+    makeRequestToAPIWithoutAuth
 };
 
 class User {
@@ -39,6 +40,16 @@ function getData(mapping, params = "", method = "get") {
         method: method,
         withCredentials: false,
         headers: {'Authorization': basicAuth},
+        params: params
+    }).then(response => {
+        return response.data;
+    })
+}
+
+function makeRequestToAPIWithoutAuth(mapping, params = "", method = "get") {
+    return axios(config.API_URL + mapping, {
+        method: method,
+        withCredentials: false,
         params: params
     }).then(response => {
         return response.data;

@@ -82,7 +82,7 @@
                                 </thead>
                                 <tbody :key="k" v-for="(roleObj,k) in projectRole.project.projectRoles">
                                 <tr>
-                                    <td>{{roleObj.user.username}}</td>
+                                    <td v-if="roleObj.user">{{roleObj.user.username}}</td>
                                     <td>{{roleObj.name}}</td>
                                 </tr>
                                 </tbody>
