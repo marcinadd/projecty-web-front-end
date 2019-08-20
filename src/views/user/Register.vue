@@ -2,6 +2,9 @@
     <div>
         <h2>Register</h2>
         <form @submit.prevent="registerUser">
+            <div :key="k" class="alert alert-danger" v-for="(error,k) in errors">
+                {{error}}
+            </div>
             <div class="form-group">
                 <label for="username">Username</label>
                 <input class="form-control" id="username" placeholder="Username" type="text" v-model="username">
@@ -37,7 +40,8 @@
                 username: '',
                 email: '',
                 password: '',
-                passwordRepeat: ''
+                passwordRepeat: '',
+                errors: []
             }
         },
         methods: {
@@ -49,6 +53,8 @@
                     passwordRepeat: this.passwordRepeat
                 }, 'post').then(function () {
                     router.push('/login')
+                }).catch(error => {
+                    this.errors = error.response.data.errors;
                 })
             }
         }

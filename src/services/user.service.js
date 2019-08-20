@@ -1,6 +1,8 @@
 import axios from 'axios';
 import {config} from "@/config";
 
+const qs = require('qs');
+
 export const userService = {
     login,
     logout,
@@ -10,32 +12,37 @@ export const userService = {
     makeRequestToAPIWithoutAuth
 };
 
-class User {
-    username;
-    authdata
+class Token {
+    access_token;
+    refresh_token;
 }
 
 function login(username, password) {
-    var basicAuth = 'Basic ' + btoa(username + ':' + password);
-    return axios.get(config.API_URL + '/auth', {
-        withCredentials: false,
-        headers: {'Authorization': +basicAuth},
+    return axios.request({
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        url: "/oauth/token",
+        method: "post",
+        baseURL: "http://localhost:8080/",
         auth: {
-            username: username,
-            password: password
-        }
-    }).then(function () {
-        const user = new User();
-        user.username = username;
-        user.authdata = window.btoa(username + ':' + password);
-        localStorage.setItem('user', JSON.stringify(user));
-        return user;
+            username: "clientId", // This is the client_id
+            password: "clientSecret" // This is the client_secret
+        },
+        data: qs.stringify({
+            "grant_type": "password",
+            "username": username,
+            "password": password
+        })
+    }).then(respose => {
+        let token = new Token();
+        token.access_token = respose.data.access_token;
+        token.refresh_token = respose.data.refresh_token;
+        localStorage.setItem('token', JSON.stringify(token));
     });
 }
 
 function getData(mapping, params = "", method = "get") {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const basicAuth = 'Basic ' + user.authdata;
+    const user = JSON.parse(localStorage.getItem('token'));
+    const basicAuth = 'Bearer ' + user.access_token;
     return axios(config.API_URL + mapping, {
         method: method,
         withCredentials: false,
@@ -57,11 +64,11 @@ function makeRequestToAPIWithoutAuth(mapping, params = "", method = "get") {
 }
 
 function logout() {
-    localStorage.removeItem('user');
+    localStorage.removeItem('token');
 }
 
 function isAuthenticated() {
-    return localStorage.getItem('user');
+    return localStorage.getItem('token');
 }
 
 function getUsernamesFromInputs(inputs) {

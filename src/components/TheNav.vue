@@ -68,7 +68,7 @@
             }
         },
         mounted() {
-            const user = JSON.parse(localStorage.getItem('user'));
+            const user = JSON.parse(localStorage.getItem('token'));
             if (user) {
                 this.username = user.username;
             }
@@ -79,7 +79,7 @@
         },
         methods: {
             isAuthenticatedUser() {
-                return localStorage.getItem('user') === null;
+                return localStorage.getItem('token') === null;
             },
             logout() {
                 userService.logout();
