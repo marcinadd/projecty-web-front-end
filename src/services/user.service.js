@@ -1,12 +1,12 @@
 import axios from 'axios';
 import {config} from "@/config";
+import createAuthRefreshInterceptor from "axios-auth-refresh/src";
 
 const qs = require('qs');
 
 export const userService = {
     login,
     logout,
-    isAuthenticated,
     makeRequestToAPI: getData,
     getUsernamesFromInputs,
     makeRequestToAPIWithoutAuth
@@ -22,10 +22,10 @@ function login(username, password) {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         url: "/oauth/token",
         method: "post",
-        baseURL: "http://localhost:8080/",
+        baseURL: config.API_URL,
         auth: {
-            username: "clientId", // This is the client_id
-            password: "clientSecret" // This is the client_secret
+            username: "clientId",
+            password: "clientSecret"
         },
         data: qs.stringify({
             "grant_type": "password",
@@ -37,16 +37,23 @@ function login(username, password) {
         token.access_token = respose.data.access_token;
         token.refresh_token = respose.data.refresh_token;
         localStorage.setItem('token', JSON.stringify(token));
+        // TODO Save username in local storage
     });
 }
 
+const refreshAuthLogic = failedRequest => refreshAccessToken().then(newToken => {
+    failedRequest.response.config.headers['Authorization'] = 'Bearer ' + newToken;
+    return Promise.resolve();
+});
+createAuthRefreshInterceptor(axios, refreshAuthLogic);
+
 function getData(mapping, params = "", method = "get") {
-    const user = JSON.parse(localStorage.getItem('token'));
-    const basicAuth = 'Bearer ' + user.access_token;
+    const token = JSON.parse(localStorage.getItem('token'));
+    const auth = 'Bearer ' + token.access_token;
     return axios(config.API_URL + mapping, {
         method: method,
         withCredentials: false,
-        headers: {'Authorization': basicAuth},
+        headers: {'Authorization': auth},
         params: params
     }).then(response => {
         return response.data;
@@ -63,8 +70,33 @@ function makeRequestToAPIWithoutAuth(mapping, params = "", method = "get") {
     })
 }
 
+function refreshAccessToken() {
+    const refreshToken = JSON.parse(localStorage.getItem('token')).refresh_token;
+    return axios.request({
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        url: "/oauth/token",
+        method: "post",
+        baseURL: config.API_URL,
+        auth: {
+            username: "clientId",
+            password: "clientSecret"
+        },
+        data: qs.stringify({
+            "grant_type": "refresh_token",
+            "refresh_token": refreshToken
+        })
+    }).then(respose => {
+        let token = new Token();
+        token.access_token = respose.data.access_token;
+        token.refresh_token = respose.data.refresh_token;
+        localStorage.setItem('token', JSON.stringify(token));
+        return token.access_token;
+    });
+}
+
 function logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
 }
 
 function isAuthenticated() {
