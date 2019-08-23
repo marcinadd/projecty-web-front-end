@@ -9,7 +9,8 @@ export const userService = {
     logout,
     makeRequestToAPI: getData,
     getUsernamesFromInputs,
-    makeRequestToAPIWithoutAuth
+    makeRequestToAPIWithoutAuth,
+    isAuthenticatedUser
 };
 
 class Token {
@@ -94,13 +95,13 @@ function refreshAccessToken() {
     });
 }
 
+function isAuthenticatedUser() {
+    return localStorage.getItem('token') !== null;
+}
+
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-}
-
-function isAuthenticated() {
-    return localStorage.getItem('token');
 }
 
 function getUsernamesFromInputs(inputs) {

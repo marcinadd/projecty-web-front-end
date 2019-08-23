@@ -9,7 +9,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                    <template v-if="isAuthenticatedUser()">
+                    <template v-if="!isAuthenticatedUser()">
                         <li class="nav-item">
                             <router-link class="nav-link" to="/login">
                                 Sign in
@@ -41,9 +41,9 @@
                             </router-link>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" th:href="@{/settings}">
+                            <router-link class="nav-link" to="/settings">
                                 <span>{{username}}</span>
-                            </a>
+                            </router-link>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link js-scroll-trigger" style="cursor: pointer" v-on:click="logout">Log
@@ -68,18 +68,20 @@
             }
         },
         mounted() {
-            const user = JSON.parse(localStorage.getItem('token'));
-            if (user) {
-                this.username = user.username;
+            if (userService.isAuthenticatedUser()) {
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (user) {
+                    this.username = user.username;
+                }
+                userService.makeRequestToAPI("/message/getUnreadMessageCount")
+                    .then(unreadMessages => {
+                        this.unreadMessages = unreadMessages;
+                    });
             }
-            userService.makeRequestToAPI("/message/getUnreadMessageCount")
-                .then(unreadMessages => {
-                    this.unreadMessages = unreadMessages;
-                });
         },
         methods: {
             isAuthenticatedUser() {
-                return localStorage.getItem('token') === null;
+                return userService.isAuthenticatedUser();
             },
             logout() {
                 userService.logout();

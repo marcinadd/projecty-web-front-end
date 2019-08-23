@@ -1,6 +1,9 @@
 <template>
     <div>
         <form @submit.prevent="addTeam">
+            <div :key="k" class="alert alert-danger" v-for="(error,k) in errors">
+                {{error}}
+            </div>
             <div class="form-group">
                 <label for="name">Name</label>
                 <input class="form-control" id="name" type="text" v-model="name">
@@ -31,7 +34,8 @@
                     {
                         username: ''
                     }
-                ]
+                ],
+                errors: []
             }
         },
         methods: {
@@ -44,9 +48,13 @@
                 userService.makeRequestToAPI("/team/addTeam", {
                     name: name,
                     usernames: usernames.join(',')
-                }, "post");
-                router.push('/team/myTeams');
-                location.reload();
+                }, "post")
+                    .then(function () {
+                        router.push('/team/myTeams');
+                        location.reload();
+                    }).catch(errors => {
+                    this.errors = errors.response.data.errors;
+                });
             }
         }
     }

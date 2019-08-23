@@ -40,10 +40,7 @@
             }
         },
         created() {
-            // reset login status
             userService.logout();
-
-            // get return url from route parameters or default to '/'
             this.returnUrl = this.$route.query.returnUrl || '/';
         },
         methods: {
@@ -52,7 +49,6 @@
                 this.submitted = true;
                 const {username, password} = this;
 
-                // stop here if form is invalid
                 if (!(username && password)) {
                     return;
                 }
@@ -60,15 +56,19 @@
                 this.loading = true;
                 userService.login(username, password)
                     .then(function () {
-                        router.push(returnUrl);
-                        location.reload();
-                    }).then(
-                        error => {
+                        userService.makeRequestToAPI('/auth')
+                            .then(user => {
+                                localStorage.setItem('user', JSON.stringify(user));
+                                router.push(returnUrl);
+                                location.reload();
+                            });
+                    })
+                    .then(error => {
                             this.error = error;
                             this.loading = false;
                         }
                     );
             }
-        }
+            }
     };
 </script>
