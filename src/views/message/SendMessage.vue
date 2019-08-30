@@ -15,6 +15,10 @@
                 <label for="text">Message</label>
                 <textarea class="form-control" id="text" placeholder="Enter message" rows="4" v-model="text"></textarea>
             </div>
+            <div class="form-group">
+                <label for="file">Attachment (optional)</label>
+                <input class="form-control-file" id="file" ref="file" type="file" v-on:change="handleFileUpload()">
+            </div>
             <div class="form-actions">
                 <button class="btn btn-success" type="submit">Send</button>
             </div>
@@ -31,17 +35,25 @@
             return {
                 recipientUsername: '',
                 title: '',
-                text: ''
+                text: '',
+                file: ''
             }
         },
         methods: {
+            handleFileUpload() {
+                this.file = this.$refs.file.files[0];
+            },
             sendMessage() {
-                userService.makeRequestToAPI("/message/sendMessage", {
-                    recipientUsername: this.recipientUsername,
-                    title: this.title,
-                    text: this.text
-                }, "post");
-                //router.push('/myProjects');
+                let formData = new FormData();
+                formData.append('recipientUsername', this.recipientUsername);
+                formData.append('title', this.title);
+                formData.append('text', this.text);
+                formData.append('multipartFile', this.file);
+                console.log(formData);
+                userService.postFormData('/message/sendMessage', formData)
+                    .then(() => {
+                        console.log("Data pushed");
+                    })
             }
         }
     }

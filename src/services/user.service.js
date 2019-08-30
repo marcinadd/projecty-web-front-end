@@ -3,6 +3,7 @@ import {config} from "@/config";
 import createAuthRefreshInterceptor from "axios-auth-refresh/src";
 
 const qs = require('qs');
+const fileDownload = require('js-file-download');
 
 export const userService = {
     login,
@@ -10,7 +11,9 @@ export const userService = {
     makeRequestToAPI: getData,
     getUsernamesFromInputs,
     makeRequestToAPIWithoutAuth,
-    isAuthenticatedUser
+    isAuthenticatedUser,
+    postFormData,
+    downloadFile
 };
 
 class Token {
@@ -58,6 +61,36 @@ function getData(mapping, params = "", method = "get") {
         params: params
     }).then(response => {
         return response.data;
+    })
+}
+
+function postFormData(mapping, formData) {
+    const token = JSON.parse(localStorage.getItem('token'));
+    const auth = 'Bearer ' + token.access_token;
+    return axios.post(config.API_URL + mapping, formData, {
+        withCredentials: false,
+        headers: {'Authorization': auth, /*'Content-Type': 'multipart/form-data'*/},
+    }).then(response => {
+        return response.data;
+    })
+}
+
+function downloadFile(mapping, params = "") {
+    const token = JSON.parse(localStorage.getItem('token'));
+    const auth = 'Bearer ' + token.access_token;
+    return axios.get(config.API_URL + mapping, {
+        withCredentials: false,
+        headers: {'Authorization': auth},
+        params: params,
+        responseType: "blob"
+    }).then(response => {
+        const contentDisposition = response.headers['content-disposition'];
+        const regex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        const matches = regex.exec(contentDisposition);
+        if (matches !== null && matches[1]) {
+            const fileName = matches[1].replace(/['"]/g, '');
+            fileDownload(response.data, fileName);
+        }
     })
 }
 

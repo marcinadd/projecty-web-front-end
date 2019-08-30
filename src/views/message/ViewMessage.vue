@@ -11,6 +11,12 @@
             <br>
             {{message.text}}
         </p>
+            <p v-if="message.fileName">
+                <b>Attachment: </b>
+                <a v-on:click="downloadAttachment">
+                    {{message.fileName}}
+                </a>
+            </p>
     </span>
     </div>
 </template>
@@ -30,6 +36,11 @@
                 .then((message) => {
                     this.message = message;
                 });
+        },
+        methods: {
+            downloadAttachment() {
+                userService.downloadFile("/message/downloadFile", {messageId: this.message.id});
+            }
         }
     }
 </script>

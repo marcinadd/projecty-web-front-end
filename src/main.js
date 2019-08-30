@@ -9,7 +9,6 @@ import {router} from './router/router';
 Vue.config.productionTip = false;
 Vue.use(VuejsDialog);
 
-
 new Vue({
   router,
   render: h => h(App)
