@@ -16,8 +16,8 @@
                 <textarea class="form-control" id="text" placeholder="Enter message" rows="4" v-model="text"></textarea>
             </div>
             <div class="form-group">
-                <label for="file">Attachment (optional)</label>
-                <input class="form-control-file" id="file" ref="file" type="file" v-on:change="handleFileUpload()">
+                <label for="files">Attachments (optional)</label>
+                <input class="form-control-file" id="files" multiple ref="files" type="file" v-on:change="updateFiles">
             </div>
             <div class="form-actions">
                 <button class="btn btn-success" type="submit">Send</button>
@@ -27,7 +27,9 @@
 </template>
 
 <script>
-    import {userService} from "@/services";
+
+    import {userService} from "@/services/user.service";
+    import {router} from "@/router/router";
 
     export default {
         name: "SendMessage",
@@ -36,23 +38,27 @@
                 recipientUsername: '',
                 title: '',
                 text: '',
-                file: ''
+                files: ''
             }
         },
         methods: {
-            handleFileUpload() {
-                this.file = this.$refs.file.files[0];
+            updateFiles() {
+                this.files = this.$refs.files.files;
             },
             sendMessage() {
                 let formData = new FormData();
                 formData.append('recipientUsername', this.recipientUsername);
                 formData.append('title', this.title);
                 formData.append('text', this.text);
-                formData.append('multipartFile', this.file);
-                console.log(formData);
+                for (let i = 0; i < this.files.length; i++) {
+                    let file = this.files[i];
+                    formData.append('multipartFiles', file);
+                }
+                formData.append('multipartFiles', this.files);
                 userService.postFormData('/message/sendMessage', formData)
                     .then(() => {
-                        console.log("Data pushed");
+                        router.push('/message/sentMessages');
+                        location.reload();
                     })
             }
         }

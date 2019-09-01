@@ -11,12 +11,12 @@
             <br>
             {{message.text}}
         </p>
-            <p v-if="message.fileName">
-                <b>Attachment: </b>
-                <a v-on:click="downloadAttachment">
-                    {{message.fileName}}
-                </a>
-            </p>
+            <b>Attachments: </b>
+            <ul :key="k" class="list-group" v-for="(attachment, k) in attachments">
+                <li class="list-group-item" style="cursor: pointer" v-on:click="downloadAttachment(k)">
+                    {{attachment.fileName}}
+                </li>
+            </ul>
     </span>
     </div>
 </template>
@@ -28,18 +28,20 @@
         name: "ViewMessage",
         data() {
             return {
-                message: []
+                message: [],
+                attachments: []
             }
         },
         mounted() {
             userService.makeRequestToAPI("/message/viewMessage", {messageId: this.$route.query.messageId})
                 .then((message) => {
                     this.message = message;
+                    this.attachments = message.attachments;
                 });
         },
         methods: {
-            downloadAttachment() {
-                userService.downloadFile("/message/downloadFile", {messageId: this.message.id});
+            downloadAttachment(k) {
+                userService.downloadFile("/message/downloadFile", {messageId: this.message.id, fileId: k});
             }
         }
     }
