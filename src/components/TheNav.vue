@@ -10,12 +10,12 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
                     <template v-if="!isAuthenticatedUser()">
-                        <li class="nav-item">
-                            <router-link v-if="this.$route.path === '/'" class="nav-link" to="/login">
+                        <li class="nav-item" v-if="this.$route.path !== '/login'">
+                            <router-link class="nav-link" to="/login">
                                 Sign in
                             </router-link>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" v-if="this.$route.path !== '/register'">
                             <router-link class="nav-link" to="/register">
                                 Sign up
                             </router-link>
