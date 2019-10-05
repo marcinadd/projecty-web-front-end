@@ -11,7 +11,7 @@
                 <ul class="navbar-nav ml-auto">
                     <template v-if="!isAuthenticatedUser()">
                         <li class="nav-item">
-                            <router-link class="nav-link" to="/login">
+                            <router-link v-if="this.$route.path === '/'" class="nav-link" to="/login">
                                 Sign in
                             </router-link>
                         </li>
