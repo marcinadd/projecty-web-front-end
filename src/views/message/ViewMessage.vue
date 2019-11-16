@@ -23,6 +23,7 @@
 
 <script>
     import {userService} from "@/services";
+    import {mappings} from "@/router/mappings";
 
     export default {
         name: "ViewMessage",
@@ -33,7 +34,7 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/message/viewMessage", {messageId: this.$route.query.messageId})
+            userService.makeRequestToAPI(mappings.MESSAGES + this.$route.query.messageId, {messageId: this.$route.query.messageId})
                 .then((message) => {
                     this.message = message;
                     this.attachments = message.attachments;

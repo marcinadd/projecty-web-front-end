@@ -23,6 +23,7 @@
     import EntryUserList from "@/components/EntryUserList";
     import {userService} from "@/services";
     import {router} from "@/router/router";
+    import {mappings} from "@/router/mappings";
 
     export default {
         name: "AddTeam",
@@ -45,9 +46,9 @@
             addTeam() {
                 const {name, inputs} = this;
                 const usernames = userService.getUsernamesFromInputs(inputs);
-                userService.makeRequestToAPI("/team/addTeam", {
+                userService.makeRequestToAPI(mappings.TEAMS, {
                     name: name,
-                    usernames: usernames.join(',')
+                    usernames: usernames
                 }, "post")
                     .then(function () {
                         router.push('/team/myTeams');

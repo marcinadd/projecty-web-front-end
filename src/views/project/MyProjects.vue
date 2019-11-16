@@ -127,6 +127,7 @@
 
 <script>
     import {userService} from "@/services";
+    import {mappingHelper, mappings} from '@/router/mappings'
 
     export default {
         name: "MyProjects",
@@ -137,14 +138,14 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/project/myProjects").then(data => {
+            userService.makeRequestToAPI(mappings.MY_PROJECTS).then(data => {
                 this.teamRoles = data.teamRoles;
                 this.projectRoles = data.projectRoles;
             });
         },
         methods: {
             leaveProject(projectId) {
-                userService.makeRequestToAPI("/project/leaveProject", {
+                userService.makeRequestToAPI(mappingHelper.createProjectMapping(projectId) + "leave", {
                     projectId: projectId
                 }, 'post').then(function () {
                     location.reload();

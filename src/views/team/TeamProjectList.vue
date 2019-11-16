@@ -30,6 +30,7 @@
 
 <script>
     import {userService} from "@/services";
+    import {mappingHelper, mappings} from "@/router/mappings";
 
     export default {
         name: "TeamProjectList",
@@ -41,7 +42,7 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI('/team/projectList', {teamId: this.$route.query.teamId})
+            userService.makeRequestToAPI(mappingHelper.createTeamMapping(this.$route.query.teamId) + mappings.TEAM_PROJECTS)
                 .then((data) => {
                     this.teamName = data.teamName;
                     this.projects = data.projects;

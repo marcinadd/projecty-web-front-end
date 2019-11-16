@@ -26,11 +26,13 @@
 <script>
     import {userService} from "@/services";
     import {router} from "@/router/router";
+    import {mappingHelper, mappings} from "@/router/mappings";
 
     export default {
         name: "AddTask",
         data() {
             return {
+                projectId: 0,
                 project: [],
                 name: '',
                 startDate: '',
@@ -38,17 +40,17 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/project/task/addTask", {projectId: this.$route.query.projectId})
+            this.projectId = this.$route.query.projectId;
+            userService.makeRequestToAPI(mappingHelper.createProjectMapping(this.projectId))
                 .then((project) => {
                     this.project = project;
                 });
         },
         methods: {
             submitTask() {
-                const projectId = this.$route.query.projectId;
+                const projectId = this.projectId;
                 const {name, startDate, endDate} = this;
-                userService.makeRequestToAPI("/project/task/addTask", {
-                    projectId: projectId,
+                userService.makeRequestToAPI(mappings.TASKS_PROJECT + projectId, {
                     name: name,
                     startDate: startDate,
                     endDate: endDate

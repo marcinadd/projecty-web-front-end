@@ -14,28 +14,31 @@
 <script>
     import {userService} from "@/services";
     import {router} from "@/router/router";
+    import {mappingHelper, mappings} from "@/router/mappings";
 
     export default {
         name: "AddProjectToSpecifiedTeam",
         data() {
             return {
-                teamName: []
+                teamId: 0,
+                teamName: ''
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/team/addProjectToTeam", {teamId: this.$route.query.teamId})
+            this.teamId = this.$route.query.teamId;
+            userService.makeRequestToAPI(mappingHelper.createTeamMapping(this.teamId))
                 .then((teamName) => {
                     this.teamName = teamName;
                 });
         },
         methods: {
             addProjectToSpecifiedTeam() {
-                userService.makeRequestToAPI("/team/addProjectToTeam", {
-                    teamId: this.$route.query.projectId,
+                const teamId = this.teamId;
+                userService.makeRequestToAPI(mappingHelper.createTeamMapping(teamId) + mappings.TEAM_PROJECTS, {
                     name: this.name
                 }, 'post')
                     .then(function () {
-                        router.push({path: "/team/projectList", query: {teamId: this.teamId}});
+                        router.push({path: "/team/projectList", query: {teamId: teamId}});
                         location.reload();
                     })
             }

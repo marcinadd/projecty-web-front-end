@@ -25,6 +25,7 @@
     import {userService} from "@/services";
     import {router} from "@/router/router";
     import EntryUserList from "@/components/EntryUserList";
+    import {mappings} from "@/router/mappings";
 
     export default {
         name: "AddProject",
@@ -46,9 +47,9 @@
             submitProject() {
                 const {name, inputs} = this;
                 const usernames = userService.getUsernamesFromInputs(inputs);
-                userService.makeRequestToAPI("/project/addproject", {
+                userService.makeRequestToAPI(mappings.ADD_PROJECT, {
                     name: name,
-                    usernames: usernames.join(',')
+                    usernames: usernames
                 }, "post");
                 router.push('/myProjects');
             }

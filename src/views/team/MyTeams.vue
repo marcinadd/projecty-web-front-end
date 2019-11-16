@@ -86,6 +86,7 @@
 <script>
     import {userService} from "@/services";
     import {router} from "@/router/router";
+    import {mappingHelper, mappings} from "@/router/mappings";
 
     export default {
         name: "MyTeams",
@@ -95,7 +96,7 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/team/myTeams").then(teamRoles => {
+            userService.makeRequestToAPI(mappings.TEAMS).then(teamRoles => {
                 this.teamRoles = teamRoles
             });
         },
@@ -104,7 +105,7 @@
                 this.$dialog
                     .confirm("You are going to leave team: " + team.name + ". Do you want to continue?")
                     .then(function () {
-                        userService.makeRequestToAPI("/team/leaveTeam", {
+                        userService.makeRequestToAPI(mappingHelper.createTeamMapping(team.id) + mappings.TEAM_LEAVE, {
                             teamId: team.id,
                         }, 'post')
                             .then(function () {

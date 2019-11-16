@@ -30,6 +30,7 @@
 
     import {userService} from "@/services/user.service";
     import {router} from "@/router/router";
+    import {mappings} from "@/router/mappings";
 
     export default {
         name: "SendMessage",
@@ -55,7 +56,8 @@
                     formData.append('multipartFiles', file);
                 }
                 formData.append('multipartFiles', this.files);
-                userService.postFormData('/message/sendMessage', formData)
+                // FIXME Fix sending message
+                userService.postFormData(mappings.MESSAGES + mappings.SEND_MESSAGE, formData)
                     .then(() => {
                         router.push('/message/sentMessages');
                         location.reload();

@@ -29,6 +29,7 @@
 <script>
     import {userService} from "@/services";
     import {router} from "@/router/router";
+    import {mappingHelper, mappings} from "@/router/mappings";
 
     export default {
         name: "AddProjectToTeam",
@@ -40,18 +41,18 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/team/addProjectToTeam").then(teamRoles => {
+            userService.makeRequestToAPI(mappings.TEAMS + "?manager=true").then(teamRoles => {
                 this.teamRoles = teamRoles
             });
         },
         methods: {
             addProjectToTeam() {
-                userService.makeRequestToAPI("/team/addProjectToTeam", {
-                    teamId: this.teamId,
+                const teamId = this.teamId;
+                userService.makeRequestToAPI(mappingHelper.createTeamMapping(teamId) + mappings.TEAM_PROJECTS, {
                     name: this.name
                 }, 'post')
                     .then(function () {
-                        router.push({path: "/team/projectList", query: {teamId: this.teamId}});
+                        router.push({path: "/team/projectList", query: {teamId: teamId}});
                         location.reload();
                     })
             }

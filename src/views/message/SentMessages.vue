@@ -36,6 +36,7 @@
 
 <script>
     import {userService} from "@/services";
+    import {mappings} from "@/router/mappings";
 
     export default {
         name: "SentMessages",
@@ -45,7 +46,7 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/message/sentMessages")
+            userService.makeRequestToAPI(mappings.MESSAGES + mappings.SENT_MESSAGES)
                 .then((messages) => {
                     this.messages = messages;
                 });

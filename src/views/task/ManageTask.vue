@@ -82,11 +82,13 @@
 <script>
     import {userService} from "@/services";
     import {router} from "@/router/router";
+    import {mappingHelper, mappings} from "@/router/mappings";
 
     export default {
         name: "ManageTask",
         data() {
             return {
+                taskId: 0,
                 task: [],
                 projectId: '',
                 notAssignedUsernames: [],
@@ -98,7 +100,8 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/project/task/manageTask", {taskId: this.$route.query.taskId})
+            this.taskId = this.$route.query.taskId;
+            userService.makeRequestToAPI(mappingHelper.createTaskMapping(this.taskId))
                 .then((data) => {
                     this.task = data.task;
                     this.notAssignedUsernames = data.notAssignedUsernames;
@@ -111,29 +114,26 @@
         },
         methods: {
             editTaskDetails() {
-                userService.makeRequestToAPI("/project/task/editTaskDetails", {
-                    id: this.$route.query.taskId,
+                userService.makeRequestToAPI(mappingHelper.createTaskMapping(this.taskId), {
                     name: this.name,
                     startDate: this.startDate,
                     endDate: this.endDate,
                     status: this.status
-                }, 'post')
+                }, 'patch')
                     .then(function () {
                         location.reload();
                     });
             },
             removeAssignment(username) {
-                userService.makeRequestToAPI("/project/task/removeAssignment", {
-                    taskId: this.$route.query.taskId,
+                userService.makeRequestToAPI(mappingHelper.createTaskMapping(this.taskId) + mappings.TASK_ASSIGN, {
                     username: username
-                }, 'post')
+                }, 'delete')
                     .then(function () {
                         location.reload();
                     });
             },
             assignUser() {
-                userService.makeRequestToAPI("/project/task/assignUser", {
-                    taskId: this.$route.query.taskId,
+                userService.makeRequestToAPI(mappingHelper.createTaskMapping(this.taskId) + mappings.TASK_ASSIGN, {
                     username: this.toAssignUsername
                 }, 'post')
                     .then(function () {
@@ -142,9 +142,7 @@
             },
             deleteTask() {
                 const {projectId} = this;
-                userService.makeRequestToAPI("/project/task/deleteTask", {
-                    taskId: this.$route.query.taskId,
-                }, 'post')
+                userService.makeRequestToAPI(mappingHelper.createTaskMapping(this.taskId), [], 'delete')
                     .then(function () {
                         router.push({path: '/project/task/taskList', query: {projectId: projectId}});
                         location.reload();

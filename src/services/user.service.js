@@ -51,14 +51,14 @@ const refreshAuthLogic = failedRequest => refreshAccessToken().then(newToken => 
 });
 createAuthRefreshInterceptor(axios, refreshAuthLogic);
 
-function getData(mapping, params = "", method = "get") {
+function getData(mapping, data = "", method = "get") {
     const token = JSON.parse(localStorage.getItem('token'));
     const auth = 'Bearer ' + token.access_token;
     return axios(config.API_URL + mapping, {
         method: method,
         withCredentials: false,
         headers: {'Authorization': auth},
-        params: params
+        data: data
     }).then(response => {
         return response.data;
     })

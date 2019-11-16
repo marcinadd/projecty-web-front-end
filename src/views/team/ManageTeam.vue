@@ -10,7 +10,7 @@
             <form @submit.prevent="changeName">
                 <div class="form-group">
                     <label for="newName">New Name:</label>
-                    <input :placeholder="team.name" class="form-control" id="newName" type="text" v-model="newName">
+                    <input :placeholder="team.name" class="form-control" id="newName" type="text" v-model="name">
                 </div>
                 <button class="btn btn-success" type="submit">Change</button>
             </form>
@@ -76,16 +76,18 @@
     import {userService} from "@/services";
     import EntryUserList from "@/components/EntryUserList";
     import {router} from "@/router/router";
+    import {mappingHelper, mappings} from "@/router/mappings";
 
     export default {
         name: "ManageTeam",
         components: {EntryUserList},
         data() {
             return {
+                teamId: 0,
                 team: [],
                 teamRoles: [],
                 currentUser: [],
-                newName: '',
+                name: '',
                 inputs: [
                     {
                         username: ''
@@ -94,7 +96,8 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/team/manageTeam", {teamId: this.$route.query.teamId})
+            this.teamId = this.$route.query.teamId;
+            userService.makeRequestToAPI(mappingHelper.createTeamMapping(this.teamId) + "?roles=true")
                 .then((data) => {
                     this.team = data.team;
                     this.currentUser = data.currentUser;
@@ -103,18 +106,15 @@
         },
         methods: {
             changeName() {
-                userService.makeRequestToAPI("/team/changeName", {
-                    teamId: this.$route.query.teamId,
-                    newName: this.newName
-                }, 'post')
+                userService.makeRequestToAPI(mappingHelper.createTeamMapping(this.teamId), {
+                    name: this.name
+                }, 'patch')
                     .then(function () {
                         location.reload()
                     })
             },
             deleteTeamRole(teamRoleId) {
-                userService.makeRequestToAPI("/team/deleteTeamRole", {
-                    teamRoleId: teamRoleId
-                }, 'post')
+                userService.makeRequestToAPI(mappingHelper.createTeamRoleMapping(teamRoleId), [], 'delete')
                     .then(function () {
                         location.reload()
                     })
@@ -124,31 +124,26 @@
             },
             addUsers() {
                 const usernames = userService.getUsernamesFromInputs(this.inputs);
-                userService.makeRequestToAPI("/team/addUsers", {
-                    teamId: this.$route.query.teamId,
-                    usernames: usernames.join(',')
-                }, 'post')
+                userService.makeRequestToAPI(mappingHelper.createTeamMapping(this.teamId) + mappings.TEAM_ROLES,
+                    usernames, 'post')
                     .then(function () {
                         location.reload()
                     })
             },
             changeTeamRole(teamRoleId, newRoleName) {
-                userService.makeRequestToAPI("/team/changeTeamRole", {
-                    teamRoleId: teamRoleId,
-                    newRoleName: newRoleName
-                }, 'post')
+                userService.makeRequestToAPI(mappingHelper.createTeamRoleMapping(teamRoleId), {
+                    name: newRoleName
+                }, 'patch')
                     .then(function () {
                         location.reload()
                     })
             },
             deleteTeam() {
-                const teamId = this.team.id;
+                const teamId = this.teamId;
                 this.$dialog
                     .confirm("You are going to delete team: " + this.team.name + ". Do you want to continue?")
                     .then(function () {
-                        userService.makeRequestToAPI("/team/deleteTeam", {
-                            teamId: teamId,
-                        }, 'post')
+                        userService.makeRequestToAPI(mappingHelper.createTeamMapping(teamId), [], 'delete')
                             .then(function () {
                                 router.push('/team/myTeams');
                                 location.reload()

@@ -31,7 +31,7 @@
                         <button class="btn btn-danger disabled" v-if="projectRole.user.id === currentUser.id">
                             Remove
                         </button>
-                        <form @submit.prevent="deleteUser(projectRole.user.id)"
+                        <form @submit.prevent="deleteUser(projectRole.id)"
                               method="post"
                               v-else>
                             <button class="btn btn-danger" type="submit">Remove</button>
@@ -81,12 +81,14 @@
     import {userService} from "@/services";
     import {router} from "@/router/router";
     import EntryUserList from "@/components/EntryUserList";
+    import {mappingHelper} from "@/router/mappings";
 
     export default {
         name: "ManageProject",
         components: {EntryUserList},
         data() {
             return {
+                projectId: 1,
                 project: [],
                 projectRoles: [],
                 currentUser: [],
@@ -99,7 +101,8 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/project/manageProject", {projectId: this.$route.query.projectId})
+            this.projectId = this.$route.query.projectId;
+            userService.makeRequestToAPI(mappingHelper.createProjectMapping(this.projectId) + "?roles=true")
                 .then((data) => {
                     this.project = data.project;
                     this.currentUser = data.currentUser;
@@ -109,32 +112,28 @@
         },
         methods: {
             changeName() {
-                userService.makeRequestToAPI("/project/changeName",
-                    {id: this.$route.query.projectId, name: this.name}, 'post')
+                userService.makeRequestToAPI(mappingHelper.createProjectMapping(this.projectId),
+                    {name: this.name}, 'patch')
                     .then(function () {
                         location.reload();
                     });
             },
             deleteProject() {
-                userService.makeRequestToAPI("/project/deleteProject", {projectId: this.$route.query.projectId}, 'post')
+                userService.makeRequestToAPI(mappingHelper.createProjectMapping(this.projectId), [], 'delete')
                     .then(function () {
                     router.push("/myProjects");
                     });
             },
             changeRole(roleId, newRoleName) {
-                userService.makeRequestToAPI("/project/changeRole", {
-                    projectId: this.$route.query.projectId,
-                    roleId: roleId,
-                    newRoleName: newRoleName
-                }, 'post').then(function () {
+                userService.makeRequestToAPI("/projectRoles/" + roleId, {
+                    name: newRoleName
+                }, 'patch').then(function () {
                     location.reload();
                 });
             },
-            deleteUser(userId) {
-                userService.makeRequestToAPI("/project/deleteUser", {
-                    projectId: this.$route.query.projectId,
-                    userId: userId
-                }, 'post').then(function () {
+            deleteUser(roleId) {
+                userService.makeRequestToAPI(mappingHelper.createProjectMapping(this.projectId) + "roles/" + roleId,
+                    [], 'delete').then(function () {
                     location.reload();
                 });
             },
@@ -144,10 +143,7 @@
             addUsers() {
                 const {inputs} = this;
                 const usernames = userService.getUsernamesFromInputs(inputs);
-                userService.makeRequestToAPI("/project/addUsers", {
-                    projectId: this.$route.query.projectId,
-                    usernames: usernames.join(',')
-                }, 'post').then(function () {
+                userService.makeRequestToAPI("/projects/" + this.projectId + "/roles", usernames, 'post').then(function () {
                     location.reload();
                 })
             },

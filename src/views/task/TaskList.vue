@@ -113,6 +113,7 @@
 <script>
     import {taskService, userService} from "@/services";
     import TaskInfo from "@/components/TaskInfo";
+    import {mappingHelper, mappings} from "@/router/mappings";
 
     export default {
         name: "TaskList",
@@ -127,7 +128,7 @@
             }
         },
         mounted() {
-            userService.makeRequestToAPI("/project/task/taskList", {projectId: this.$route.query.projectId}).then(data => {
+            userService.makeRequestToAPI(mappings.TASKS_PROJECT + this.$route.query.projectId).then(data => {
                 this.toDoTasks = data.toDoTasks;
                 this.inProgressTasks = data.inProgressTasks;
                 this.doneTasks = data.doneTasks;
@@ -148,8 +149,8 @@
                 return hasPermissionToEdit || taskService.isAssignedToTask(task);
             },
             changeStatus(taskId, status) {
-                userService.makeRequestToAPI("/project/task/changeStatus",
-                    {taskId: taskId, status: status}, 'post')
+                userService.makeRequestToAPI(mappingHelper.createTaskMapping(taskId),
+                    {status: status}, 'patch')
                     .then(function () {
                         location.reload();
                 })
