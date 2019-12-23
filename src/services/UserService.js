@@ -36,12 +36,11 @@ function login(username, password) {
             "username": username,
             "password": password
         })
-    }).then(respose => {
+    }).then(response => {
         let token = new Token();
-        token.access_token = respose.data.access_token;
-        token.refresh_token = respose.data.refresh_token;
+        token.access_token = response.data.access_token;
+        token.refresh_token = response.data.refresh_token;
         localStorage.setItem('token', JSON.stringify(token));
-        // TODO Save username in local storage
     });
 }
 

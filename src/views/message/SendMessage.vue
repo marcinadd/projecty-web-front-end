@@ -28,7 +28,7 @@
 
 <script>
 
-    import {userService} from "@/services/user.service";
+    import {userService} from "@/services/UserService";
     import {router} from "@/router/router";
     import {mappings} from "@/router/mappings";
 
