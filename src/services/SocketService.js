@@ -17,7 +17,7 @@ function SocketService() {
         var socket = new SockJS(endpoint);
         var stompClient = Stomp.over(socket);
 
-        stompClient.connect({}, function (frame) {
+        stompClient.connect({}, function () {
             let url = stompClient.ws._transport.url;
             url = url.replace(
                 "ws://localhost:8080/secured/room/", "");
@@ -32,15 +32,11 @@ function SocketService() {
     };
 
     this.subscribeSpecific = function (callback) {
-        console.log("!!!!@@@@@@@@@@@2####Try to subsrcibe");
         that.stompClient.subscribe('/secured/user/queue/specific-user'
             + '-user' + that.sessionId, callback);
     };
 
     this.sendMessage = function (recipient, text) {
-        console.log("Try to send message to " + recipient + " with text: " + text);
-        console.log(that.stompClient.status);
-        console.log("Stompclient status is connected");
         const message = {
             'from': "user",
             'to': recipient,

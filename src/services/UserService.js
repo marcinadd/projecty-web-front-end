@@ -13,7 +13,8 @@ export const userService = {
     makeRequestToAPIWithoutAuth,
     isAuthenticatedUser,
     postFormData,
-    downloadFile
+    downloadFile,
+    getCurrentUserUsername
 };
 
 class Token {
@@ -142,4 +143,8 @@ function getUsernamesFromInputs(inputs) {
         usernames.push(inputs[i].username);
     }
     return usernames;
+}
+
+function getCurrentUserUsername() {
+    return JSON.parse(localStorage.getItem("user")).username;
 }

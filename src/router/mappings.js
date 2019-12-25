@@ -17,7 +17,9 @@ export const mappings = {
     TEAM_ROLES: "roles",
     TEAM_PROJECTS: "projects",
 
-    TEAMROLES: "/teamRoles/"
+    TEAMROLES: "/teamRoles/",
+
+    CHAT: "/chat/"
 };
 
 export const mappingHelper = {
