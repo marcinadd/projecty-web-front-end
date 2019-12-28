@@ -1,17 +1,38 @@
 <template>
     <div>
-        <div class="container">
-            <h1>Chat with <b>{{recipientUsername}}</b></h1>
-            <button class="btn btn-success" v-on:click="loadMoreMessages">Load more</button>
-            <ul class="list-group" id="messageList" style="overflow-y: scroll; height: 50vh">
-            </ul>
-
-            <form @submit.prevent="sendMessage" class="my-5">
-                <div class="form-group">
-                    <input class="form-control" placeholder="Enter message" type="text" v-model="text">
+        <button class="btn btn-success" v-on:click="loadMoreMessages">Load more</button>
+        <div class="messaging">
+            <div class="inbox_msg">
+                <div class="inbox_people">
+                    <div class="headind_srch">
+                        <div class="recent_heading">
+                            <h4>Recent</h4>
+                        </div>
+                        <div class="srch_bar">
+                            <div class="stylish-input-group">
+                                <input class="search-bar" placeholder="Search" type="text">
+                                <span class="input-group-addon">
+                <button type="button"> <i aria-hidden="true" class="fa fa-search"></i> </button>
+                </span></div>
+                        </div>
+                    </div>
+                    <div class="inbox_chat" id="inboxList"></div>
                 </div>
-                <button class="btn-success btn">Send</button>
-            </form>
+                <div class="mesgs">
+                    <div class="msg_history" id="msgList"></div>
+                    <div class="type_msg">
+                        <div class="input_msg_write">
+                            <form @submit.prevent="sendMessage">
+                                <input class="write_msg" placeholder="Type a message" type="text" v-model="text"/>
+                                <button class="msg_send_btn" type="submit"><i aria-hidden="true"
+                                                                              class="fa fa-paper-plane-o"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center top_spac"> Chat design by <a href="https://bootsnipp.com/sunil8107" target="">Sunil
+                Rajput</a></p>
         </div>
     </div>
 </template>
@@ -37,29 +58,39 @@
             this.recipientUsername = this.$route.query.with;
             userService.makeRequestToAPI(mappings.CHAT + this.recipientUsername)
                 .then((response) => {
-                    chatService.appendPastMessages(response.content);
+                    chatService.appendToPastMessages(response.content);
                     this.messageCount += response.content.length;
                     this.socketService = new SocketService();
                     this.socketService.connect(this.onMessageCallback);
                 }).catch(() => {
                 router.push("/404");
             });
+            userService.makeRequestToAPI(mappings.CHAT)
+                .then((chatMessages) => {
+                    chatService.appendToInboxList(chatMessages, this.recipientUsername);
+                });
         },
         methods: {
             onMessageCallback(message) {
                 message = JSON.parse(message.body);
-                chatService.addMessageToList(message.text, false, false);
+                new Audio(require("../../assets/notification.mp3")).play()
+                chatService.addMessageToList(message, true, false);
             },
             sendMessage() {
-                this.socketService.sendMessage(this.recipientUsername, this.text);
-                chatService.addMessageToList(this.text, true, false);
-                this.text = "";
-                this.messageCount++;
+                if (this.text) {
+                    let message = new Map();
+                    message.text = this.text;
+                    message.sendDate = new Date().toISOString();
+                    this.socketService.sendMessage(this.recipientUsername, this.text);
+                    chatService.addMessageToList(message, false, false);
+                    this.text = "";
+                    this.messageCount++;
+                }
             },
             loadMoreMessages() {
                 userService.makeRequestToAPI(mappings.CHAT + this.recipientUsername + "?offset=" + this.messageCount)
                     .then((response) => {
-                        chatService.appendPastMessages(response.content);
+                        chatService.appendToPastMessages(response.content);
                         this.messageCount += response.content.length;
                     });
             }
@@ -68,5 +99,5 @@
 </script>
 
 <style scoped>
-    @import "chat.css"
+    @import "chat.css";
 </style>
