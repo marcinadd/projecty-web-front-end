@@ -1,12 +1,17 @@
 import {userService} from "@/services/UserService";
 import moment from "moment";
+import {router} from "@/router/router";
 
 export const chatService = {
     addMessageToList,
     appendToPastMessages,
     addElementToInboxList,
-    appendToInboxList
+    appendToInboxList,
+    updateLastMessageWith,
+    redirectToLastChat
 };
+
+const LAST_MESSAGE_WITH = "lastMessageWith";
 
 function addMessageToList(message, isReceived, toBegin = true) {
     const messageList = document.getElementById("msgList");
@@ -71,19 +76,16 @@ function appendToPastMessages(chatMessages) {
 }
 
 function appendToInboxList(chatMessages, activeUsername) {
-    const currentUserUsername = userService.getCurrentUserUsername();
     for (let i in chatMessages) {
-        let username;
-        if (currentUserUsername === chatMessages[i].recipient.username) {
-            username = chatMessages[i].sender.username;
-        } else {
-            username = chatMessages[i].recipient.username;
-        }
+        let username = getSecondUserUsername(chatMessages[i]);
         const element = new Map();
         element.text = chatMessages[i].text;
         element.username = username;
         element.date = chatMessages[i].sendDate;
         element.active = username === activeUsername;
+        if (!chatMessages[i].seenDate) {
+            element.unread = true;
+        }
         addElementToInboxList(element);
     }
 }
@@ -93,6 +95,12 @@ function addElementToInboxList(element) {
 
     const node = document.createElement("div");
     node.className = element.active ? "chat_list active_chat" : "chat_list";
+
+    node.addEventListener("click", function () {
+        router.push({path: "/chat", query: {with: element.username}});
+        location.reload();
+    });
+    node.style.cursor = "pointer";
 
     const nodeChatPeople = document.createElement("div");
     nodeChatPeople.className = "chat_people";
@@ -122,6 +130,7 @@ function addElementToInboxList(element) {
     nodeChatIb.appendChild(nodeH5);
 
     const nodeMessageText = document.createElement("p");
+    nodeMessageText.id = LAST_MESSAGE_WITH + element.username;
     nodeMessageText.appendChild(document.createTextNode(element.text));
 
     nodeChatIb.appendChild(nodeMessageText);
@@ -131,4 +140,39 @@ function addElementToInboxList(element) {
     node.appendChild(nodeChatPeople);
 
     inboxList.insertBefore(node, inboxList.firstChild);
+
+    if (element.unread) {
+        nodeChatIb.style.fontWeight = "bold";
+        nodeH5.style.fontWeight = "bold";
+        nodeMessageText.style.color = "black";
+        nodeMessageText.style.color = "bold";
+    }
+}
+
+function updateLastMessageWith(message, username) {
+    const lastMessage = document.getElementById(LAST_MESSAGE_WITH + username);
+    if (!lastMessage) {
+        const element = new Map();
+        element.text = message.text;
+        element.username = username;
+        element.date = new Date();
+        addElementToInboxList(element)
+    } else {
+        lastMessage.textContent = message.text;
+    }
+}
+
+function getSecondUserUsername(message) {
+    const currentUserUsername = userService.getCurrentUserUsername();
+    if (currentUserUsername === message.recipient.username) {
+        return message.sender.username;
+    }
+    return message.recipient.username;
+}
+
+
+function redirectToLastChat(message) {
+    const username = getSecondUserUsername(message);
+    router.push({path: "/chat", query: {with: username}});
+    location.reload();
 }

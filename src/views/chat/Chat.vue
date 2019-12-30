@@ -56,25 +56,32 @@
         },
         mounted() {
             this.recipientUsername = this.$route.query.with;
-            userService.makeRequestToAPI(mappings.CHAT + this.recipientUsername)
-                .then((response) => {
-                    chatService.appendToPastMessages(response.content);
-                    this.messageCount += response.content.length;
-                    this.socketService = new SocketService();
-                    this.socketService.connect(this.onMessageCallback);
-                }).catch(() => {
-                router.push("/404");
-            });
             userService.makeRequestToAPI(mappings.CHAT)
                 .then((chatMessages) => {
                     chatService.appendToInboxList(chatMessages, this.recipientUsername);
+                    if (!this.recipientUsername) {
+                        chatService.redirectToLastChat(chatMessages[chatMessages.length - 1]);
+                    }
                 });
+            if (this.recipientUsername) {
+                userService.makeRequestToAPI(mappings.CHAT + this.recipientUsername)
+                    .then((response) => {
+                        chatService.appendToPastMessages(response.content);
+                        this.messageCount += response.content.length;
+                        this.socketService = new SocketService();
+                        this.socketService.connect(this.onMessageCallback);
+                        userService.makeRequestToAPI(mappings.CHAT + this.recipientUsername + "/set/read")
+                    }).catch(() => {
+                    router.push("/404");
+                });
+            }
         },
         methods: {
             onMessageCallback(message) {
                 message = JSON.parse(message.body);
-                new Audio(require("../../assets/notification.mp3")).play()
+                new Audio(require("../../assets/notification.mp3")).play();
                 chatService.addMessageToList(message, true, false);
+                chatService.updateLastMessageWith(message, this.recipientUsername);
             },
             sendMessage() {
                 if (this.text) {
@@ -83,6 +90,7 @@
                     message.sendDate = new Date().toISOString();
                     this.socketService.sendMessage(this.recipientUsername, this.text);
                     chatService.addMessageToList(message, false, false);
+                    chatService.updateLastMessageWith(message, this.recipientUsername);
                     this.text = "";
                     this.messageCount++;
                 }
