@@ -3,8 +3,7 @@
         <div class="container">
             <router-link class="navbar-brand" to="/">Projecty Web</router-link>
             <button aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"
-                    class="navbar-toggler"
-                    data-target="#navbarResponsive" data-toggle="collapse" type="button">
+                    class="navbar-toggler" data-target="#navbarResponsive" data-toggle="collapse" type="button">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
@@ -23,9 +22,17 @@
                     </template>
                     <template v-else>
                         <li class="nav-item">
+                            <router-link class="nav-link" to="/chat">
+                                Chat
+                                <template v-if="unreadChatMessageCount>0">
+                                    <span class="badge badge-warning">{{unreadChatMessageCount}}</span>
+                                </template>
+                            </router-link>
+                        </li>
+                        <li class="nav-item">
                             <router-link class="nav-link" to="/message/receivedMessages">
-                                <template v-if="unreadMessages>0">
-                                    <span class="text-warning">({{unreadMessages}})</span>
+                                <template v-if="unreadMessageCount>0">
+                                    <span class="text-warning">({{unreadMessageCount}})</span>
                                 </template>
                                 Messages
                             </router-link>
@@ -58,13 +65,15 @@
 
 <script>
     import {userService} from "@/services";
+    import {mappings} from "@/router/mappings";
 
     export default {
         name: "TheNav",
         data() {
             return {
                 username: '',
-                unreadMessages: 0
+                unreadMessageCount: 0,
+                unreadChatMessageCount: 0
             }
         },
         mounted() {
@@ -73,9 +82,13 @@
                 if (user) {
                     this.username = user.username;
                 }
-                userService.makeRequestToAPI("/message/getUnreadMessageCount")
-                    .then(unreadMessages => {
-                        this.unreadMessages = unreadMessages;
+                userService.makeRequestToAPI("/messages/getUnreadMessageCount")
+                    .then(unreadMessageCount => {
+                        this.unreadMessageCount = unreadMessageCount;
+                    });
+                userService.makeRequestToAPI(mappings.CHAT + "unreadChatMessageCount")
+                    .then(unreadChatMessageCount => {
+                        this.unreadChatMessageCount = unreadChatMessageCount;
                     });
             }
         },

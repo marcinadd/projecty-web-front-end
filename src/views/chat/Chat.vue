@@ -60,7 +60,7 @@
                 .then((chatMessages) => {
                     chatService.appendToInboxList(chatMessages, this.recipientUsername);
                     if (!this.recipientUsername) {
-                        chatService.redirectToLastChat(chatMessages[chatMessages.length - 1]);
+                        chatService.redirectToLastChat(chatMessages[chatMessages.length - 1].lastMessage);
                     }
                 });
             if (this.recipientUsername) {
@@ -79,8 +79,8 @@
         methods: {
             onMessageCallback(message) {
                 message = JSON.parse(message.body);
-                new Audio(require("../../assets/notification.mp3")).play();
-                chatService.addMessageToList(message, true, false);
+                if (message.from === this.recipientUsername)
+                    chatService.addMessageToList(message, true, false);
                 chatService.updateLastMessageWith(message, this.recipientUsername);
             },
             sendMessage() {

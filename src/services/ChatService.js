@@ -77,14 +77,16 @@ function appendToPastMessages(chatMessages) {
 
 function appendToInboxList(chatMessages, activeUsername) {
     for (let i in chatMessages) {
-        let username = getSecondUserUsername(chatMessages[i]);
+        var message = chatMessages[i].lastMessage;
+        let username = getSecondUserUsername(message);
         const element = new Map();
-        element.text = chatMessages[i].text;
+        element.text = message.text;
         element.username = username;
-        element.date = chatMessages[i].sendDate;
+        element.date = message.sendDate;
         element.active = username === activeUsername;
-        if (!chatMessages[i].seenDate) {
-            element.unread = true;
+        const unreadMessageCount = chatMessages[i].unreadMessageCount;
+        if (unreadMessageCount) {
+            element.unreadMessageCount = chatMessages[i].unreadMessageCount;
         }
         addElementToInboxList(element);
     }
@@ -124,7 +126,6 @@ function addElementToInboxList(element) {
     const nodeDateText = document.createTextNode(moment(String(element.date)).format('MMM DD'));
     nodeDate.className = "chat_date";
     nodeDate.appendChild(nodeDateText);
-
     nodeH5.appendChild(nodeDate);
 
     nodeChatIb.appendChild(nodeH5);
@@ -141,11 +142,15 @@ function addElementToInboxList(element) {
 
     inboxList.insertBefore(node, inboxList.firstChild);
 
-    if (element.unread) {
+    if (element.unreadMessageCount > 0) {
         nodeChatIb.style.fontWeight = "bold";
         nodeH5.style.fontWeight = "bold";
         nodeMessageText.style.color = "black";
         nodeMessageText.style.color = "bold";
+        const nodeUnreadBadge = document.createElement('span');
+        nodeUnreadBadge.className = "badge badge-primary";
+        nodeUnreadBadge.appendChild(document.createTextNode(element.unreadMessageCount));
+        nodeH5.appendChild(nodeUnreadBadge);
     }
 }
 
