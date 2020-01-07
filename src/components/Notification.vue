@@ -26,11 +26,11 @@
         methods: {
             onMessageCallback(message) {
                 message = JSON.parse(message.body);
-                this.toastr.info(message.text, message.from,
+                this.toastr.info(message.text, message.sender,
                     {
                         onclick: function () {
                             router.push({path: "/chat", query: {with: message.from}});
-                            this.playSound();
+                            // this.playSound();
                         }
                     }
                 );

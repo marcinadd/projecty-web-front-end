@@ -36,7 +36,7 @@
         name: "SendMessage",
         data() {
             return {
-                recipientUsername: '',
+                selectedChatUsername: '',
                 title: '',
                 text: '',
                 files: ''
@@ -48,7 +48,7 @@
             },
             sendMessage() {
                 let formData = new FormData();
-                formData.append('recipientUsername', this.recipientUsername);
+                formData.append('recipientUsername', this.selectedChatUsername);
                 formData.append('title', this.title);
                 formData.append('text', this.text);
                 for (let i = 0; i < this.files.length; i++) {

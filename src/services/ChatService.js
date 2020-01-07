@@ -8,10 +8,12 @@ export const chatService = {
     addElementToInboxList,
     appendToInboxList,
     updateLastMessageWith,
-    redirectToLastChat
+    redirectToLastChat,
+    onMessageReceived
 };
 
 const LAST_MESSAGE_WITH = "lastMessageWith";
+const UNREAD_MESSAGE_COUNT_WITH = "unreadMessageCountWith";
 
 function addMessageToList(message, isReceived, toBegin = true) {
     const messageList = document.getElementById("msgList");
@@ -142,15 +144,20 @@ function addElementToInboxList(element) {
 
     inboxList.insertBefore(node, inboxList.firstChild);
 
+    const nodeUnreadMessageCount = document.createElement('span');
+    nodeUnreadMessageCount.id = UNREAD_MESSAGE_COUNT_WITH + element.username;
+    nodeUnreadMessageCount.className = "badge badge-primary";
+    nodeUnreadMessageCount.appendChild(document.createTextNode(element.unreadMessageCount > 0 ? element.unreadMessageCount : 0));
+    nodeH5.appendChild(nodeUnreadMessageCount);
+
     if (element.unreadMessageCount > 0) {
         nodeChatIb.style.fontWeight = "bold";
         nodeH5.style.fontWeight = "bold";
         nodeMessageText.style.color = "black";
         nodeMessageText.style.color = "bold";
-        const nodeUnreadBadge = document.createElement('span');
-        nodeUnreadBadge.className = "badge badge-primary";
-        nodeUnreadBadge.appendChild(document.createTextNode(element.unreadMessageCount));
-        nodeH5.appendChild(nodeUnreadBadge);
+        nodeUnreadMessageCount.style.visibility = "visible";
+    } else {
+        nodeUnreadMessageCount.style.visibility = "hidden";
     }
 }
 
@@ -167,17 +174,39 @@ function updateLastMessageWith(message, username) {
     }
 }
 
-function getSecondUserUsername(message) {
-    const currentUserUsername = userService.getCurrentUserUsername();
-    if (currentUserUsername === message.recipient.username) {
-        return message.sender.username;
+function updateMessageCounterWith(username) {
+    const messageCount = document.getElementById(UNREAD_MESSAGE_COUNT_WITH + username);
+    if (messageCount) {
+        let unreadMessageCount = 1;
+        if (messageCount.textContent !== undefined) {
+            unreadMessageCount = parseInt(messageCount.textContent) + 1;
+        }
+        messageCount.textContent = unreadMessageCount;
+        messageCount.style.visibility = "visible";
     }
-    return message.recipient.username;
 }
 
+function getSecondUserUsername(message) {
+    const currentUserUsername = userService.getCurrentUserUsername();
+    if (message.recipient.hasOwnProperty('username')) {
+        return currentUserUsername === message.recipient.username ? message.sender.username : message.recipient.username;
+    }
+    return currentUserUsername === message.recipient ? message.sender : message.recipient;
+}
 
 function redirectToLastChat(message) {
     const username = getSecondUserUsername(message);
     router.push({path: "/chat", query: {with: username}});
     location.reload();
+}
+
+function onMessageReceived(message, selectedChatUsername) {
+    if (message.sender === selectedChatUsername) {
+        addMessageToList(message, true, false);
+        updateLastMessageWith(message, selectedChatUsername);
+    } else {
+        const secondUsername = getSecondUserUsername(message);
+        updateLastMessageWith(message, secondUsername);
+        updateMessageCounterWith(secondUsername);
+    }
 }

@@ -49,28 +49,28 @@
         data() {
             return {
                 socketService: [],
-                recipientUsername: "",
+                selectedChatUsername: "",
                 text: "",
                 messageCount: 0
             }
         },
         mounted() {
-            this.recipientUsername = this.$route.query.with;
+            this.selectedChatUsername = this.$route.query.with;
             userService.makeRequestToAPI(mappings.CHAT)
                 .then((chatMessages) => {
-                    chatService.appendToInboxList(chatMessages, this.recipientUsername);
-                    if (!this.recipientUsername) {
+                    chatService.appendToInboxList(chatMessages, this.selectedChatUsername);
+                    if (!this.selectedChatUsername) {
                         chatService.redirectToLastChat(chatMessages[chatMessages.length - 1].lastMessage);
                     }
                 });
-            if (this.recipientUsername) {
-                userService.makeRequestToAPI(mappings.CHAT + this.recipientUsername)
+            if (this.selectedChatUsername) {
+                userService.makeRequestToAPI(mappings.CHAT + this.selectedChatUsername)
                     .then((response) => {
                         chatService.appendToPastMessages(response.content);
                         this.messageCount += response.content.length;
                         this.socketService = new SocketService();
                         this.socketService.connect(this.onMessageCallback);
-                        userService.makeRequestToAPI(mappings.CHAT + this.recipientUsername + "/set/read")
+                        userService.makeRequestToAPI(mappings.CHAT + this.selectedChatUsername + "/set/read")
                     }).catch(() => {
                     router.push("/404");
                 });
@@ -79,24 +79,22 @@
         methods: {
             onMessageCallback(message) {
                 message = JSON.parse(message.body);
-                if (message.from === this.recipientUsername)
-                    chatService.addMessageToList(message, true, false);
-                chatService.updateLastMessageWith(message, this.recipientUsername);
+                chatService.onMessageReceived(message, this.selectedChatUsername);
             },
             sendMessage() {
                 if (this.text) {
                     let message = new Map();
                     message.text = this.text;
                     message.sendDate = new Date().toISOString();
-                    this.socketService.sendMessage(this.recipientUsername, this.text);
+                    this.socketService.sendMessage(this.selectedChatUsername, this.text);
                     chatService.addMessageToList(message, false, false);
-                    chatService.updateLastMessageWith(message, this.recipientUsername);
+                    chatService.updateLastMessageWith(message, this.selectedChatUsername);
                     this.text = "";
                     this.messageCount++;
                 }
             },
             loadMoreMessages() {
-                userService.makeRequestToAPI(mappings.CHAT + this.recipientUsername + "?offset=" + this.messageCount)
+                userService.makeRequestToAPI(mappings.CHAT + this.selectedChatUsername + "?offset=" + this.messageCount)
                     .then((response) => {
                         chatService.appendToPastMessages(response.content);
                         this.messageCount += response.content.length;

@@ -1,5 +1,6 @@
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs'
+import {userService} from "@/services/UserService";
 
 export {
     SocketService
@@ -37,9 +38,10 @@ function SocketService() {
     };
 
     this.sendMessage = function (recipient, text) {
+        const username = userService.getCurrentUserUsername();
         const message = {
-            'from': "user",
-            'to': recipient,
+            'sender': username,
+            'recipient': recipient,
             'text': text
         };
         that.stompClient.send("/spring-security-mvc-socket/secured/room", {},
