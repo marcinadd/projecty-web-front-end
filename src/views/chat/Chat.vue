@@ -40,9 +40,11 @@
 <script>
 
     import {SocketService} from "@/services/SocketService";
-    import {chatService, userService} from '../../services';
+    import {userService} from '../../services';
     import {mappings} from "@/router/mappings";
     import {router} from "@/router/router";
+    import {chatService} from "@/services/ChatService";
+
 
     export default {
         name: "Chat",

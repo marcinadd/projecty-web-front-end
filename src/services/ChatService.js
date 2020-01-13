@@ -1,6 +1,7 @@
 import {userService} from "@/services/UserService";
 import moment from "moment";
 import {router} from "@/router/router";
+import {chatServiceHelper} from "@/services/ChatServiceHelper";
 
 export const chatService = {
     addMessageToList,
@@ -80,7 +81,7 @@ function appendToPastMessages(chatMessages) {
 function appendToInboxList(chatMessages, activeUsername) {
     for (let i in chatMessages) {
         var message = chatMessages[i].lastMessage;
-        let username = getSecondUserUsername(message);
+        let username = chatServiceHelper.getSecondUserUsername(message);
         const element = new Map();
         element.text = message.text;
         element.username = username;
@@ -186,16 +187,8 @@ function updateMessageCounterWith(username) {
     }
 }
 
-function getSecondUserUsername(message) {
-    const currentUserUsername = userService.getCurrentUserUsername();
-    if (message.recipient.hasOwnProperty('username')) {
-        return currentUserUsername === message.recipient.username ? message.sender.username : message.recipient.username;
-    }
-    return currentUserUsername === message.recipient ? message.sender : message.recipient;
-}
-
 function redirectToLastChat(message) {
-    const username = getSecondUserUsername(message);
+    const username = chatServiceHelper.getSecondUserUsername(message);
     router.push({path: "/chat", query: {with: username}});
     location.reload();
 }
@@ -205,7 +198,7 @@ function onMessageReceived(message, selectedChatUsername) {
         addMessageToList(message, true, false);
         updateLastMessageWith(message, selectedChatUsername);
     } else {
-        const secondUsername = getSecondUserUsername(message);
+        const secondUsername = chatServiceHelper.getSecondUserUsername(message);
         updateLastMessageWith(message, secondUsername);
         updateMessageCounterWith(secondUsername);
     }

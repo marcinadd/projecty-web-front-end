@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {config} from "@/config";
-import createAuthRefreshInterceptor from "axios-auth-refresh/src";
 
 const qs = require('qs');
 const fileDownload = require('js-file-download');
@@ -14,7 +13,8 @@ export const userService = {
     isAuthenticatedUser,
     postFormData,
     downloadFile,
-    getCurrentUserUsername
+    getCurrentUserUsername,
+    refreshAccessToken
 };
 
 class Token {
@@ -45,11 +45,6 @@ function login(username, password) {
     });
 }
 
-const refreshAuthLogic = failedRequest => refreshAccessToken().then(newToken => {
-    failedRequest.response.config.headers['Authorization'] = 'Bearer ' + newToken;
-    return Promise.resolve();
-});
-createAuthRefreshInterceptor(axios, refreshAuthLogic);
 
 function getData(mapping, data = "", method = "get") {
     const token = JSON.parse(localStorage.getItem('token'));
