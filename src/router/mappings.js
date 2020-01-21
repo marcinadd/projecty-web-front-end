@@ -19,7 +19,8 @@ export const mappings = {
 
     TEAMROLES: "/teamRoles/",
 
-    CHAT: "/chat/"
+    CHAT: "/chat/",
+    NOTIFICATIONS: "/notifications/"
 };
 
 export const mappingHelper = {

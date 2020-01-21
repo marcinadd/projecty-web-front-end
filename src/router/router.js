@@ -22,6 +22,7 @@ import Register from "@/views/user/Register";
 import Settings from "@/views/user/Settings";
 import Chat from "@/views/chat/Chat";
 import NotFound from "@/NotFound";
+import MyNotifications from "@/views/notification/MyNotifications";
 
 
 Vue.use(Router);
@@ -55,6 +56,8 @@ export const router = new Router({
         {path: '/message/viewMessage', component: ViewMessage},
 
         {path: '/chat', component: Chat},
+
+        {path: '/notifications', component: MyNotifications},
 
         {path: '/404', component: NotFound},
         {path: '*', redirect: '/404'},

@@ -22,6 +22,14 @@
                     </template>
                     <template v-else>
                         <li class="nav-item">
+                            <router-link class="nav-link" to="/notifications">
+                                Notifications
+                                <template v-if="unreadNotificationCount>0">
+                                    <span class="badge badge-warning">{{unreadNotificationCount}}</span>
+                                </template>
+                            </router-link>
+                        </li>
+                        <li class="nav-item">
                             <router-link class="nav-link" to="/chat">
                                 Chat
                                 <template v-if="unreadChatMessageCount>0">
@@ -73,7 +81,8 @@
             return {
                 username: '',
                 unreadMessageCount: 0,
-                unreadChatMessageCount: 0
+                unreadChatMessageCount: 0,
+                unreadNotificationCount: 0
             }
         },
         mounted() {
@@ -82,6 +91,10 @@
                 if (user) {
                     this.username = user.username;
                 }
+                userService.makeRequestToAPI(mappings.NOTIFICATIONS + "getUnreadNotificationCount")
+                    .then(unreadNotificationCount => {
+                        this.unreadNotificationCount = unreadNotificationCount;
+                    });
                 userService.makeRequestToAPI("/messages/getUnreadMessageCount")
                     .then(unreadMessageCount => {
                         this.unreadMessageCount = unreadMessageCount;

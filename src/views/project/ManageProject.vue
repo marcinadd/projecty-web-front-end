@@ -132,7 +132,7 @@
                 });
             },
             deleteUser(roleId) {
-                userService.makeRequestToAPI(mappingHelper.createProjectMapping(this.projectId) + "roles/" + roleId,
+                userService.makeRequestToAPI("/projectRoles/" + roleId,
                     [], 'delete').then(function () {
                     location.reload();
                 });
