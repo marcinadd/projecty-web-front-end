@@ -99,9 +99,10 @@
             this.teamId = this.$route.query.teamId;
             userService.makeRequestToAPI(mappingHelper.createTeamMapping(this.teamId) + "?roles=true")
                 .then((data) => {
-                    this.team = data.team;
+                    // this.team = data.team;
                     this.currentUser = data.currentUser;
                     this.teamRoles = data.teamRoles;
+                    this.team = data.teamRoles[0].team;
                 });
         },
         methods: {

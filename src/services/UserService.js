@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {config} from "@/config";
-import createAuthRefreshInterceptor from "axios-auth-refresh/src";
 
 const qs = require('qs');
 const fileDownload = require('js-file-download');
@@ -13,7 +12,9 @@ export const userService = {
     makeRequestToAPIWithoutAuth,
     isAuthenticatedUser,
     postFormData,
-    downloadFile
+    downloadFile,
+    getCurrentUserUsername,
+    refreshAccessToken
 };
 
 class Token {
@@ -36,20 +37,14 @@ function login(username, password) {
             "username": username,
             "password": password
         })
-    }).then(respose => {
+    }).then(response => {
         let token = new Token();
-        token.access_token = respose.data.access_token;
-        token.refresh_token = respose.data.refresh_token;
+        token.access_token = response.data.access_token;
+        token.refresh_token = response.data.refresh_token;
         localStorage.setItem('token', JSON.stringify(token));
-        // TODO Save username in local storage
     });
 }
 
-const refreshAuthLogic = failedRequest => refreshAccessToken().then(newToken => {
-    failedRequest.response.config.headers['Authorization'] = 'Bearer ' + newToken;
-    return Promise.resolve();
-});
-createAuthRefreshInterceptor(axios, refreshAuthLogic);
 
 function getData(mapping, data = "", method = "get") {
     const token = JSON.parse(localStorage.getItem('token'));
@@ -143,4 +138,8 @@ function getUsernamesFromInputs(inputs) {
         usernames.push(inputs[i].username);
     }
     return usernames;
+}
+
+function getCurrentUserUsername() {
+    return JSON.parse(localStorage.getItem("user")).username;
 }

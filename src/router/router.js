@@ -20,6 +20,8 @@ import ViewMessage from "@/views/message/ViewMessage";
 import SentMessages from "@/views/message/SentMessages";
 import Register from "@/views/user/Register";
 import Settings from "@/views/user/Settings";
+import Chat from "@/views/chat/Chat";
+import NotFound from "@/NotFound";
 
 
 Vue.use(Router);
@@ -52,7 +54,10 @@ export const router = new Router({
         {path: '/message/sendMessage', component: SendMessage},
         {path: '/message/viewMessage', component: ViewMessage},
 
-        {path: '*', redirect: '/'}
+        {path: '/chat', component: Chat},
+
+        {path: '/404', component: NotFound},
+        {path: '*', redirect: '/404'},
     ]
 });
 
