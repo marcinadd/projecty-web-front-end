@@ -70,8 +70,8 @@
                     .then((response) => {
                         chatService.appendToPastMessages(response.content);
                         this.messageCount += response.content.length;
-                        this.socketService = new SocketService();
-                        this.socketService.connect(this.onMessageCallback);
+                        this.socketService = new SocketService("/secured/room/", "/user/queue/specific-user");
+                        this.socketService.connect(this.onNotificationReceivedCallback);
                         userService.makeRequestToAPI(mappings.CHAT + this.selectedChatUsername + "/set/read")
                     }).catch(() => {
                     router.push("/404");
@@ -79,7 +79,7 @@
             }
         },
         methods: {
-            onMessageCallback(message) {
+            onNotificationReceivedCallback(message) {
                 message = JSON.parse(message.body);
                 chatService.onMessageReceived(message, this.selectedChatUsername);
             },

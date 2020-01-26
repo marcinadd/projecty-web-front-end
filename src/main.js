@@ -9,6 +9,8 @@ import createAuthRefreshInterceptor from "axios-auth-refresh/src";
 import axios from "axios";
 import {userService} from "@/services";
 
+export const eventBus = new Vue();
+
 Vue.config.productionTip = false;
 Vue.use(VuejsDialog);
 

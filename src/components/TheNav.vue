@@ -74,6 +74,7 @@
 <script>
     import {userService} from "@/services";
     import {mappings} from "@/router/mappings";
+    import {eventBus} from "@/main";
 
     export default {
         name: "TheNav",
@@ -85,12 +86,20 @@
                 unreadNotificationCount: 0
             }
         },
+        created() {
+            eventBus.$on("setUnreadNotificationCount", this.setUnreadNotificationCount);
+            eventBus.$on("changeUnreadNotificationCount", this.changeUnreadNotificationCount);
+            eventBus.$on("setUnreadChatMessageCount", this.setUnreadChatMessageCount);
+            eventBus.$on("changeUnreadChatMessageCount", this.changeUnreadChatMessageCount);
+
+        },
         mounted() {
             if (userService.isAuthenticatedUser()) {
                 const user = JSON.parse(localStorage.getItem('user'));
                 if (user) {
                     this.username = user.username;
                 }
+                //TODO Pack this request to one
                 userService.makeRequestToAPI(mappings.NOTIFICATIONS + "getUnreadNotificationCount")
                     .then(unreadNotificationCount => {
                         this.unreadNotificationCount = unreadNotificationCount;
@@ -112,6 +121,19 @@
             logout() {
                 userService.logout();
                 location.reload();
+            },
+
+            setUnreadNotificationCount(value) {
+                this.unreadNotificationCount = value;
+            },
+            changeUnreadNotificationCount(step) {
+                this.unreadNotificationCount += step;
+            },
+            setUnreadChatMessageCount(value) {
+                this.unreadChatMessageCount = value;
+            },
+            changeUnreadChatMessageCount(step) {
+                this.unreadChatMessageCount += step;
             }
         }
     }

@@ -25,6 +25,7 @@
     import {userService} from "@/services";
     import {mappings} from "@/router/mappings";
     import NotificationList from "@/components/NotificationList";
+    import {eventBus} from "@/main";
 
     export default {
         name: "MyNotifications",
@@ -40,7 +41,8 @@
                 .then(notifications => {
                     this.unreadNotifications = notifications;
                 });
-            userService.makeRequestToAPI(mappings.NOTIFICATIONS + "setAllRead");
+            userService.makeRequestToAPI(mappings.NOTIFICATIONS + "setAllRead", {}, "POST");
+            eventBus.$emit("setUnreadNotificationCount", 0);
         },
         methods: {
             getReadNotifications() {

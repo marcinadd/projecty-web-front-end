@@ -2,7 +2,8 @@
   <div id="app">
       <TheNav/>
       <TheHeader title="Hello"></TheHeader>
-      <Notification></Notification>
+      <ChatNotification></ChatNotification>
+      <Notifications></Notifications>
       <Section></Section>
       <TheFooter/>
   </div>
@@ -15,11 +16,12 @@
     import TheFooter from "@/components/TheFooter";
     import TheNav from "@/components/TheNav";
     import Section from "@/components/Section";
-    import Notification from "@/components/Notification";
+    import ChatNotification from "@/components/ChatNotification";
+    import Notifications from "@/components/Notifications";
 
     export default {
         name: "app",
-        components: {Notification, Section, TheNav, TheFooter, TheHeader}
+        components: {Notifications, ChatNotification, Section, TheNav, TheFooter, TheHeader}
 }
 </script>
 
