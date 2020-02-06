@@ -70,7 +70,7 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle user-action" data-toggle="dropdown" href="#">
-                            <img :src="avatar" alt="Avatar" class="avatar">
+                            <img class="avatar" id="avatar"/>
                             {{username}} <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
@@ -106,7 +106,7 @@
                 unreadMessageCount: 0,
                 unreadChatMessageCount: 0,
                 unreadNotificationCount: 0,
-                avatar: []
+                avatar: ''
             }
         },
         created() {
@@ -136,12 +136,11 @@
                         this.unreadChatMessageCount = unreadChatMessageCount;
                     });
 
-                //TODO Load avatar
-                //FIXME Fix avatar loading
                 userService.getImage("/user/" + userService.getCurrentUserUsername() + "/avatar")
                     .then(avatar => {
-                        this.avatar = Buffer.from(avatar, "binary");
-                        console.log(this.avatar);
+                        let avatarDom = document.getElementById("avatar");
+                        avatarDom.src = " data:image/jpeg;charset=utf-8;base64, "
+                            + Buffer.from(avatar, "base64").toString("base64");
                     });
             }
         },
