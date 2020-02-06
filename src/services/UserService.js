@@ -14,7 +14,8 @@ export const userService = {
     postFormData,
     downloadFile,
     getCurrentUserUsername,
-    refreshAccessToken
+    refreshAccessToken,
+    getImage
 };
 
 class Token {
@@ -54,6 +55,18 @@ function getData(mapping, data = "", method = "get") {
         withCredentials: false,
         headers: {'Authorization': auth},
         data: data
+    }).then(response => {
+        return response.data;
+    })
+}
+
+function getImage(mapping, data = "") {
+    const token = JSON.parse(localStorage.getItem('token'));
+    const auth = 'Bearer ' + token.access_token;
+    return axios.get(config.API_URL + mapping, {
+        withCredentials: false,
+        headers: {'Authorization': auth},
+        responseType: "arraybuffer"
     }).then(response => {
         return response.data;
     })

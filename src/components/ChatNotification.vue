@@ -21,7 +21,7 @@
                 "positionClass": "toast-bottom-right"
             };
 
-            this.socketService = new SocketService("/secured/room", "/user/queue/specific-user");
+            this.socketService = new SocketService("/secured/room/", "/user/queue/specific-user");
             this.socketService.connect(this.onNotificationReceivedCallback);
         },
         methods: {

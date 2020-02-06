@@ -35,7 +35,12 @@ class SocketService {
             that.stompClient = stompClient;
             that.subscribeSpecific(messageCallback, that.subscribeURL);
             return stompClient;
-        })
+        });
+        socket.onclose = function () {
+            setTimeout(function () {
+                that.connect(messageCallback)
+            }, 5000);
+        };
     }
 
     //
