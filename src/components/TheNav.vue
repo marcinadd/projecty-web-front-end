@@ -27,7 +27,7 @@
                     </li>
                 </template>
                 <template v-else>
-                    <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-home"></i><span>Home</span></a>
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i><span>Home</span></a>
                     </li>
                     <li class="nav-item">
                         <router-link class="nav-link" to="/myProjects">
