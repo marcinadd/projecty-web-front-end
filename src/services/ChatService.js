@@ -114,6 +114,7 @@ function addElementToInboxList(element) {
     nodeImgDiv.className = "chat_img";
 
     const nodeImg = document.createElement("img");
+    nodeImg.className = "chat_img_el";
     nodeImg.src = "https://ptetutorials.com/images/user-profile.png";
     nodeImgDiv.appendChild(nodeImg);
 

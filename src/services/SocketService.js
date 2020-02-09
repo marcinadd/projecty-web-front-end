@@ -23,6 +23,8 @@ class SocketService {
         const endpoint = config.API_URL + this.endpoint + "?access_token=" + token.access_token;
         var socket = new SockJS(endpoint);
         var stompClient = Stomp.over(socket);
+        stompClient.debug = () => {
+        };
         var that = this;
         stompClient.connect({}, function () {
             let url = stompClient.ws._transport.url;

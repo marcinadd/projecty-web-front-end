@@ -136,12 +136,14 @@
                         this.unreadChatMessageCount = unreadChatMessageCount;
                     });
 
+                let avatarDom = document.getElementById("avatar");
                 userService.getImage("/user/" + userService.getCurrentUserUsername() + "/avatar")
                     .then(avatar => {
-                        let avatarDom = document.getElementById("avatar");
                         avatarDom.src = " data:image/jpeg;charset=utf-8;base64, "
                             + Buffer.from(avatar, "base64").toString("base64");
-                    });
+                    }).catch(function () {
+                    avatarDom.src = require("../assets/avatar.jpg")
+                });
             }
         },
         methods: {

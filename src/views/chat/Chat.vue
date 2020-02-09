@@ -34,6 +34,7 @@
             <p class="text-center top_spac"> Chat design by <a href="https://bootsnipp.com/sunil8107" target="">Sunil
                 Rajput</a></p>
         </div>
+        <button v-on:click="loadAvatars">Load avatars btn</button>
     </div>
 </template>
 
@@ -61,6 +62,7 @@
             userService.makeRequestToAPI(mappings.CHAT)
                 .then((chatMessages) => {
                     chatService.appendToInboxList(chatMessages, this.selectedChatUsername);
+                    this.loadAvatars();
                     if (!this.selectedChatUsername) {
                         chatService.redirectToLastChat(chatMessages[chatMessages.length - 1].lastMessage);
                     }
@@ -72,7 +74,7 @@
                         this.messageCount += response.content.length;
                         this.socketService = new SocketService("/secured/room/", "/user/queue/specific-user");
                         this.socketService.connect(this.onNotificationReceivedCallback);
-                        userService.makeRequestToAPI(mappings.CHAT + this.selectedChatUsername + "/set/read")
+                        userService.makeRequestToAPI(mappings.CHAT + this.selectedChatUsername + "/set/read");
                     }).catch(() => {
                     router.push("/404");
                 });
@@ -101,6 +103,22 @@
                         chatService.appendToPastMessages(response.content);
                         this.messageCount += response.content.length;
                     });
+            },
+            loadAvatars() {
+                let documentInboxListDOM = document.getElementById("inboxList");
+                let childNodes = documentInboxListDOM.childNodes;
+                for (let child in Array.from(childNodes)) {
+                    let divChatElement = childNodes[child];
+                    let username = divChatElement.getElementsByTagName("h5")[0].firstChild.data;
+                    let chatInboxAvatar = divChatElement.getElementsByTagName("img")[0];
+                    userService.getImage("/user/" + username + "/avatar")
+                        .then(avatar => {
+                            chatInboxAvatar.src = " data:image/jpeg;charset=utf-8;base64, "
+                                + Buffer.from(avatar).toString("base64");
+                        }).catch(function () {
+                        chatInboxAvatar.src = require("../../assets/avatar.jpg")
+                    });
+                }
             }
         }
     }

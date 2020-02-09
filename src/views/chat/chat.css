@@ -91,6 +91,10 @@ img {
     width: 11%;
 }
 
+.chat_img_el {
+    border-radius: 50%;
+}
+
 .chat_ib {
     float: left;
     padding: 0 0 0 15px;
