@@ -16,7 +16,7 @@ export const chatService = {
 const LAST_MESSAGE_WITH = "lastMessageWith";
 const UNREAD_MESSAGE_COUNT_WITH = "unreadMessageCountWith";
 
-function addMessageToList(message, isReceived, toBegin = true) {
+function addMessageToList(message, isReceived, toBegin = true, avatar) {
     const messageList = document.getElementById("msgList");
     const node = document.createElement("div");
 
@@ -33,7 +33,8 @@ function addMessageToList(message, isReceived, toBegin = true) {
         const nodeImgDiv = document.createElement("div");
         nodeImgDiv.className = "incoming_msg_img";
         const nodeImg = document.createElement("img");
-        nodeImg.src = "https://ptetutorials.com/images/user-profile.png";
+        nodeImg.className = "chat_img_el";
+        nodeImg.src = avatar;
         nodeImgDiv.appendChild(nodeImg);
 
         const nodeMessage = document.createElement("div");
@@ -64,14 +65,14 @@ function addMessageToList(message, isReceived, toBegin = true) {
     }
 }
 
-function appendToPastMessages(chatMessages) {
+function appendToPastMessages(chatMessages, avatar) {
     const currentUserUsername = userService.getCurrentUserUsername();
     for (let i in chatMessages) {
         const message = chatMessages[i];
         if (message.sender.username === currentUserUsername) {
-            this.addMessageToList(chatMessages[i], false);
+            this.addMessageToList(chatMessages[i], false, true, avatar);
         } else {
-            this.addMessageToList(chatMessages[i], true);
+            this.addMessageToList(chatMessages[i], true, true, avatar);
         }
     }
     const msgList = document.getElementById("msgList");
@@ -115,8 +116,15 @@ function addElementToInboxList(element) {
 
     const nodeImg = document.createElement("img");
     nodeImg.className = "chat_img_el";
-    nodeImg.src = "https://ptetutorials.com/images/user-profile.png";
     nodeImgDiv.appendChild(nodeImg);
+
+    userService.getImage("/user/" + element.username + "/avatar")
+        .then(avatar => {
+            nodeImg.src = " data:image/jpeg;charset=utf-8;base64, "
+                + Buffer.from(avatar).toString("base64");
+        }).catch(function () {
+        nodeImg.src = require("../assets/avatar.jpg")
+    });
 
     nodeChatPeople.appendChild(nodeImgDiv);
 
@@ -194,9 +202,9 @@ function redirectToLastChat(message) {
     location.reload();
 }
 
-function onMessageReceived(message, selectedChatUsername) {
+function onMessageReceived(message, selectedChatUsername, avatar) {
     if (message.sender === selectedChatUsername) {
-        addMessageToList(message, true, false);
+        addMessageToList(message, true, false, avatar);
         updateLastMessageWith(message, selectedChatUsername);
     } else {
         const secondUsername = chatServiceHelper.getSecondUserUsername(message);
